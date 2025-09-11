@@ -114,12 +114,12 @@ export const AuthProvider = ({ children }) => {
   //   }
   // };
 
-  const login = async (email, password) => {
+  const login = async (identifier, password, role) => {
     try {
       setLoading(true);
       const res = await axios.post(
         `${backendURl}/api/auth/login`,
-        { email, password },
+        { identifier, password, role },
         { withCredentials: true }
       );
 
@@ -134,11 +134,11 @@ export const AuthProvider = ({ children }) => {
           sameSite: "strict",
         });
 
-        // console.log(res.data.token);
+        console.log(res.data.user);
 
         toast.success("Login successful!");
         setLoading(false);
-        navigate("/dashboard");
+        navigate(`/${res.data.user.role}/dashboard`);
       } else {
         setLoading(false);
         toast.error(res.data.error || "Unknown error");

@@ -32,7 +32,7 @@ const ProtectedAuth = () => {
 
   // ✅ If user is logged in, redirect to their dashboard instead of login/signup
   if (user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={`/${user.role}/dashboard`} replace />;
   }
 
   return <Outlet />;

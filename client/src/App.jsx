@@ -6,12 +6,14 @@ import Home from "./Pages/Home";
 import Signup from "./Pages/Signup";
 import Login from "./Pages/Login";
 import Verify from "./Pages/Verify";
-import Dashboard from "./Pages/Dashboard";
 import ProtectedAuth from "./components/Protected/ProtectedAuth";
 import ProtectedRoute from "./components/Protected/ProtectedRoute";
 import ForgotPassword from "./Pages/ForgotPassword";
 import ResetPassword from "./Pages/ResetPassword";
 import Profile from "./Pages/Profile";
+import AdminDashboard from "./Pages/Admin/AdminDashboard";
+import FacultyDashbard from "./Pages/Faculty/FacultyDashbard";
+import StudentDashboard from "./Pages/Student/StudentDashboard";
 
 function App() {
   return (
@@ -25,13 +27,21 @@ function App() {
             <Route path="/auth/signup" element={<Signup />} />
             <Route path="/auth/verify" element={<Verify />} />
             <Route path="/auth/login" element={<Login />} />
-            <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-            <Route path="/auth/reset-password" element={<ResetPassword />} />
+            {/* <Route path="/auth/forgot-password" element={<ForgotPassword />} /> */}
+            {/* <Route path="/auth/reset-password" element={<ResetPassword />} /> */}
           </Route>
 
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/profile" element={<Profile />} />
+          <Route element={<ProtectedRoute role="admin" />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            {/* <Route path="/profile" element={<Profile />} /> */}
+          </Route>
+
+          <Route element={<ProtectedRoute role="faculty" />}>
+            <Route path="/faculty/dashboard" element={<FacultyDashbard />} />
+          </Route>
+
+          <Route element={<ProtectedRoute role="student" />}>
+            <Route path="/student/dashboard" element={<StudentDashboard />} />
           </Route>
         </Routes>
       </AuthProvider>

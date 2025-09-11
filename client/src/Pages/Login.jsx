@@ -9,23 +9,102 @@ import {
   FiLogIn,
   FiEye,
   FiEyeOff,
+  FiUser,
+  FiBook,
+  FiAward,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
 const Login = () => {
+  const [activeTab, setActiveTab] = useState("admin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
+  const [registrationNumber, setRegistrationNumber] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { login, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    await login(email, password);
+
+    let identifier, role;
+
+    switch (activeTab) {
+      case "admin":
+        identifier = email;
+        role = "admin";
+        break;
+      case "faculty":
+        identifier = employeeId;
+        role = "faculty";
+        break;
+      case "student":
+        identifier = registrationNumber;
+        role = "student";
+        break;
+      default:
+        identifier = email;
+        role = "admin";
+    }
+
+    await login(identifier, password, role);
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const renderInputFields = () => {
+    switch (activeTab) {
+      case "admin":
+        return (
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <FiMail className="h-5 w-5 text-gray-500" />
+            </div>
+            <input
+              className="pl-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+        );
+      case "faculty":
+        return (
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <FiUser className="h-5 w-5 text-gray-500" />
+            </div>
+            <input
+              className="pl-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="Employee ID"
+              value={employeeId}
+              onChange={(e) => setEmployeeId(e.target.value)}
+              required
+            />
+          </div>
+        );
+      case "student":
+        return (
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <FiAward className="h-5 w-5 text-gray-500" />
+            </div>
+            <input
+              className="pl-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="Registration Number"
+              value={registrationNumber}
+              onChange={(e) => setRegistrationNumber(e.target.value)}
+              required
+            />
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -44,19 +123,31 @@ const Login = () => {
           <p className="text-gray-400">Log in to your account</p>
         </div>
 
+        {/* Role Selection Tabs */}
+        <div className="flex bg-gray-700 rounded-lg p-1 mb-6">
+          {["admin", "faculty", "student"].map((role) => (
+            <button
+              key={role}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
+                activeTab === role
+                  ? "bg-purple-600 text-white shadow"
+                  : "text-gray-300 hover:text-white"
+              }`}
+              onClick={() => setActiveTab(role)}
+            >
+              <div className="flex items-center justify-center gap-1">
+                {role === "admin" && <FiUser className="h-4 w-4" />}
+                {role === "faculty" && <FiBook className="h-4 w-4" />}
+                {role === "student" && <FiAward className="h-4 w-4" />}
+                {role.charAt(0).toUpperCase() + role.slice(1)}
+              </div>
+            </button>
+          ))}
+        </div>
+
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-4">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiMail className="h-5 w-5 text-gray-500" />
-              </div>
-              <input
-                className="pl-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="Email Address"
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+            {renderInputFields()}
 
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -66,6 +157,7 @@ const Login = () => {
                 type={showPassword ? "text" : "password"}
                 className="pl-10 pr-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 placeholder="Password"
+                value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
@@ -83,14 +175,14 @@ const Login = () => {
             </div>
           </div>
 
-          <div className="text-right">
+          {/* <div className="text-right">
             <Link
               to="/auth/forgot-password"
               className="text-sm text-purple-400 hover:text-purple-300"
             >
               Forgot Password?
             </Link>
-          </div>
+          </div> */}
 
           <motion.button
             whileHover={{ scale: 1.02 }}
