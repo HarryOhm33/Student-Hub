@@ -50,12 +50,20 @@ export const AuthProvider = ({ children }) => {
   }, [navigate]);
 
   // Signup Function
-  const signup = async (name, email, password) => {
+  const signup = async (
+    name,
+    email,
+    password,
+    instituteName,
+    instituteEmail
+  ) => {
     try {
       const signupData = {
         name,
         email,
         password,
+        instituteName,
+        instituteEmail,
       };
 
       //   console.log(signupData);

@@ -1,6 +1,9 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Admin = require("../models/admin");
+const Faculty = require("../models/faculty");
+const Student = require("../models/student");
+const Institute = require("../models/institute");
 const Session = require("../models/session");
 // const otpGenerator = require("otp-generator");
 const sendEmail = require("../utils/sendEmail");
@@ -12,9 +15,9 @@ const {
 } = require("../utils/mailTemplates");
 
 module.exports.signup = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, instituteName, instituteEmail } = req.body;
 
-  if (!name || !email || !password)
+  if (!name || !email || !password || !instituteName || !instituteEmail)
     return res.status(400).json({ message: "All fields are required" });
 
   const existingUser = await Admin.findOne({ email });
@@ -32,22 +35,52 @@ module.exports.signup = async (req, res) => {
   // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Save token &user
+  // Save token
   await EmailToken.create({ email, token });
 
+  let institute;
   if (!existingUser) {
+    // Create institute
+    const instCode = `${instituteName
+      .toUpperCase()
+      .replace(/\s+/g, "")}_${Date.now()}`;
+    institute = await Institute.create({
+      name: instituteName,
+      code: instCode,
+      createdByEmail: email,
+      instituteEmail, // ✅ now storing institute email
+      isVerified: false,
+    });
+
+    // Create admin linked to institute
     await Admin.create({
       name,
       email,
       password: hashedPassword,
       isVerified: false,
+      institute: institute._id,
     });
   } else {
     // Update existing user
     existingUser.name = name;
     existingUser.password = hashedPassword;
-    existingUser.isVerified = false; // Reset verification status
+    existingUser.isVerified = false;
     await existingUser.save();
+
+    // Update or create institute if not exists
+    institute = await Institute.findOne({ instituteEmail });
+    if (!institute) {
+      const instCode = `${instituteName
+        .toUpperCase()
+        .replace(/\s+/g, "")}_${Date.now()}`;
+      institute = await Institute.create({
+        name: instituteName,
+        code: instCode,
+        createdByEmail: email,
+        instituteEmail, // ✅ now using the passed institute email
+        isVerified: false,
+      });
+    }
   }
 
   // Send verification link
@@ -65,7 +98,7 @@ module.exports.signup = async (req, res) => {
   res.status(200).json({
     valid: true,
     message:
-      "Verification link sent to email(valid for 10 min). Verify to complete signup. Please check your spam folder if you don't see it in your inbox.",
+      "Verification link sent to email (valid for 10 min). Verify to complete signup. Please check your spam folder if you don't see it in your inbox.",
   });
 };
 
@@ -90,8 +123,18 @@ module.exports.verify = async (req, res) => {
     return res.status(404).json({ message: "User not found" });
   }
 
+  const institute = await Institute.findOne({ createdByEmail: record.email });
+
+  if (!institute) {
+    return res.status(404).json({ message: "Institute not found" });
+  }
+
+  user.institute = institute._id;
+
   user.isVerified = true;
+  institute.isVerified = true;
   await user.save();
+  await institute.save();
 
   // ✅ Delete email token after successful verification
   await EmailToken.deleteOne({ token: token, email: email });
@@ -102,18 +145,34 @@ module.exports.verify = async (req, res) => {
 };
 
 module.exports.login = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await Admin.findOne({ email });
+  const { identifier, password, role } = req.body;
+  let user;
 
-  if (!user)
-    return res.status(400).json({ message: "User not found, SignUp First!!" });
-  if (!user.isVerified)
+  // Determine which model to use based on role
+  if (role === "admin") {
+    user = await Admin.findOne({ email: identifier });
+  } else if (role === "faculty") {
+    user = await Faculty.findOne({ employeeId: identifier });
+  } else if (role === "student") {
+    user = await Student.findOne({ regNumber: identifier });
+  } else {
+    return res.status(400).json({ message: "Invalid role" });
+  }
+
+  if (!user) {
+    return res.status(400).json({ message: "User not found, SignUp first!" });
+  }
+
+  if (!user.isVerified) {
     return res
       .status(403)
       .json({ message: "Please signup or verify your account first." });
+  }
 
   const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) return res.status(400).json({ message: "Incorrect password" });
+  if (!isMatch) {
+    return res.status(400).json({ message: "Invalid credentials" });
+  }
 
   // ✅ Generate JWT Token
   const token = jwt.sign({ user: user }, process.env.JWT_SECRET, {
@@ -145,7 +204,18 @@ module.exports.verifySession = async (req, res) => {
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  const user = await Admin.findById(req.user._id);
+
+  const role = req.user.role;
+  let user;
+
+  if (role === "admin") {
+    user = await Admin.findById(req.user._id);
+  } else if (role === "faculty") {
+    user = await Faculty.findById(req.user._id);
+  } else if (role === "student") {
+    user = await Student.findById(req.user._id);
+  }
+
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
