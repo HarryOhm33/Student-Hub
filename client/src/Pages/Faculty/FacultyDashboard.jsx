@@ -1,7 +1,7 @@
 import React from "react";
 
-const FacultyDashbard = () => {
+const FacultyDashboard = () => {
   return <div>FacultyDashbard</div>;
 };
 
-export default FacultyDashbard;
+export default FacultyDashboard;

@@ -59,48 +59,63 @@ const Login = () => {
     switch (activeTab) {
       case "admin":
         return (
-          <div className="relative">
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+            className="relative"
+          >
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FiMail className="h-5 w-5 text-gray-500" />
             </div>
             <input
-              className="pl-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="pl-10 w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
               placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-          </div>
+          </motion.div>
         );
       case "faculty":
         return (
-          <div className="relative">
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+            className="relative"
+          >
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FiUser className="h-5 w-5 text-gray-500" />
             </div>
             <input
-              className="pl-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="pl-10 w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
               placeholder="Employee ID"
               value={employeeId}
               onChange={(e) => setEmployeeId(e.target.value)}
               required
             />
-          </div>
+          </motion.div>
         );
       case "student":
         return (
-          <div className="relative">
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+            className="relative"
+          >
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FiAward className="h-5 w-5 text-gray-500" />
             </div>
             <input
-              className="pl-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="pl-10 w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
               placeholder="Registration Number"
               value={registrationNumber}
               onChange={(e) => setRegistrationNumber(e.target.value)}
               required
             />
-          </div>
+          </motion.div>
         );
       default:
         return null;
@@ -108,30 +123,39 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-md"
+        className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-200"
       >
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full mb-4">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full mb-4"
+          >
             <FiLogIn className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-          <p className="text-gray-400">Log in to your account</p>
+          </motion.div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            Welcome Back
+          </h1>
+          <p className="text-gray-600">Log in to your account</p>
         </div>
 
         {/* Role Selection Tabs */}
-        <div className="flex bg-gray-700 rounded-lg p-1 mb-6">
+        <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
           {["admin", "faculty", "student"].map((role) => (
-            <button
+            <motion.button
               key={role}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
                 activeTab === role
-                  ? "bg-purple-600 text-white shadow"
-                  : "text-gray-300 hover:text-white"
+                  ? "bg-green-600 text-white shadow"
+                  : "text-gray-600 hover:text-green-700"
               }`}
               onClick={() => setActiveTab(role)}
             >
@@ -141,7 +165,7 @@ const Login = () => {
                 {role === "student" && <FiAward className="h-4 w-4" />}
                 {role.charAt(0).toUpperCase() + role.slice(1)}
               </div>
-            </button>
+            </motion.button>
           ))}
         </div>
 
@@ -149,13 +173,18 @@ const Login = () => {
           <div className="space-y-4">
             {renderInputFields()}
 
-            <div className="relative">
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+              className="relative"
+            >
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <FiLock className="h-5 w-5 text-gray-500" />
               </div>
               <input
                 type={showPassword ? "text" : "password"}
-                className="pl-10 pr-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="pl-10 pr-10 w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -163,33 +192,24 @@ const Login = () => {
               />
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 transition-colors"
                 onClick={togglePasswordVisibility}
               >
                 {showPassword ? (
-                  <FiEyeOff className="h-5 w-5 text-gray-500" />
+                  <FiEyeOff className="h-5 w-5" />
                 ) : (
-                  <FiEye className="h-5 w-5 text-gray-500" />
+                  <FiEye className="h-5 w-5" />
                 )}
               </button>
-            </div>
+            </motion.div>
           </div>
-
-          {/* <div className="text-right">
-            <Link
-              to="/auth/forgot-password"
-              className="text-sm text-purple-400 hover:text-purple-300"
-            >
-              Forgot Password?
-            </Link>
-          </div> */}
 
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:from-green-600 hover:to-green-700 transition-all shadow-md"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -201,17 +221,22 @@ const Login = () => {
           </motion.button>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-gray-400">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-6 text-center"
+        >
+          <p className="text-gray-600">
             Don't have an account?{" "}
             <button
               onClick={() => navigate("/auth/signup")}
-              className="text-purple-400 hover:text-purple-300 font-medium"
+              className="text-green-600 hover:text-green-700 font-medium transition-colors"
             >
               Sign Up
             </button>
           </p>
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   );

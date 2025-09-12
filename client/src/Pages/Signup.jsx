@@ -43,26 +43,28 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-md"
+        className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-200"
       >
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Create Account</h1>
-          <p className="text-gray-400">Join us and start your journey</p>
+          <h1 className="text-3xl font-bold text-[#1F2937] mb-2">
+            Create Account
+          </h1>
+          <p className="text-[#4B5563]">Join us and start your journey</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiUser className="h-5 w-5 text-gray-500" />
+                <FiUser className="h-5 w-5 text-[#4B5563]" />
               </div>
               <input
-                className="pl-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="pl-10 w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-[#1F2937] placeholder-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
                 placeholder="Full Name"
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -71,11 +73,11 @@ const Signup = () => {
 
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiMail className="h-5 w-5 text-gray-500" />
+                <FiMail className="h-5 w-5 text-[#4B5563]" />
               </div>
               <input
                 type="email"
-                className="pl-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="pl-10 w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-[#1F2937] placeholder-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
                 placeholder="Email Address"
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -85,10 +87,10 @@ const Signup = () => {
             {/* Institute Name */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiUser className="h-5 w-5 text-gray-500" />
+                <FiUser className="h-5 w-5 text-[#4B5563]" />
               </div>
               <input
-                className="pl-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="pl-10 w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-[#1F2937] placeholder-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
                 placeholder="Institute Name"
                 onChange={(e) => setInstituteName(e.target.value)}
                 required
@@ -98,11 +100,11 @@ const Signup = () => {
             {/* Institute Email */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiMail className="h-5 w-5 text-gray-500" />
+                <FiMail className="h-5 w-5 text-[#4B5563]" />
               </div>
               <input
                 type="email"
-                className="pl-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="pl-10 w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-[#1F2937] placeholder-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
                 placeholder="Institute Email"
                 onChange={(e) => setInstituteEmail(e.target.value)}
                 required
@@ -111,11 +113,11 @@ const Signup = () => {
 
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiLock className="h-5 w-5 text-gray-500" />
+                <FiLock className="h-5 w-5 text-[#4B5563]" />
               </div>
               <input
                 type={showPassword ? "text" : "password"}
-                className="pl-10 pr-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="pl-10 pr-10 w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-[#1F2937] placeholder-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
                 placeholder="Password"
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -126,20 +128,20 @@ const Signup = () => {
                 onClick={togglePasswordVisibility}
               >
                 {showPassword ? (
-                  <FiEyeOff className="h-5 w-5 text-gray-500" />
+                  <FiEyeOff className="h-5 w-5 text-[#4B5563]" />
                 ) : (
-                  <FiEye className="h-5 w-5 text-gray-500" />
+                  <FiEye className="h-5 w-5 text-[#4B5563]" />
                 )}
               </button>
             </div>
 
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiLock className="h-5 w-5 text-gray-500" />
+                <FiLock className="h-5 w-5 text-[#4B5563]" />
               </div>
               <input
                 type={showConfirmPassword ? "text" : "password"}
-                className="pl-10 pr-10 w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="pl-10 pr-10 w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-[#1F2937] placeholder-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
                 placeholder="Confirm Password"
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -150,9 +152,9 @@ const Signup = () => {
                 onClick={toggleConfirmPasswordVisibility}
               >
                 {showConfirmPassword ? (
-                  <FiEyeOff className="h-5 w-5 text-gray-500" />
+                  <FiEyeOff className="h-5 w-5 text-[#4B5563]" />
                 ) : (
-                  <FiEye className="h-5 w-5 text-gray-500" />
+                  <FiEye className="h-5 w-5 text-[#4B5563]" />
                 )}
               </button>
             </div>
@@ -163,7 +165,7 @@ const Signup = () => {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2"
+            className="w-full bg-[#10B981] hover:bg-[#059669] text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-md"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -176,11 +178,11 @@ const Signup = () => {
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-gray-400">
+          <p className="text-[#4B5563]">
             Already have an account?{" "}
             <button
               onClick={() => navigate("/auth/login")}
-              className="text-purple-400 hover:text-purple-300 font-medium"
+              className="text-[#10B981] hover:text-[#059669] font-medium"
             >
               Log In
             </button>
