@@ -8,6 +8,8 @@ import {
   FiTrendingUp,
   FiUser,
 } from "react-icons/fi";
+import lock3 from "../assets/lock3.png";
+
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
@@ -16,13 +18,14 @@ const Home = () => {
   return (
     <div className="bg-[#F9FAFB]">
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-6  -mt-16">
+      <section className=" relative min-h-screen flex items-center justify-center px-6  bg-cover bg-center"
+       style={{ backgroundImage: `url(${lock3})` }}>
         <div className="max-w-5xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mb-8"
+            className="mb-8 sm:mb-8 mt-8 sm:-mt-16"
           >
             <h1 className="text-4xl md:text-6xl font-extrabold text-[#1F2937] mb-6 leading-tight">
               One Platform for All Student Achievements
@@ -67,128 +70,65 @@ const Home = () => {
               className="flex items-center justify-center gap-2 px-6 py-3 bg-[#10B981] hover:bg-[#059669] text-white rounded-lg font-semibold shadow-md"
             >
               <FiShield className="h-5 w-5" />
-              Admin Login
+              Admin Login / Signup
             </motion.button>
           </motion.div>
- {/* Quick Stats with Progress Rings */}
+{/* Quick Stats with Progress Rings */}
 <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 mt-16 text-center">
-  {/* Students Empowered */}
-  <div className="flex flex-col items-center">
-    <svg width="140" height="140" viewBox="0 0 120 120" className="mb-3">
-      {/* Background Ring */}
-      <circle
-        cx="60"
-        cy="60"
-        r="54"
-        stroke="#E5E7EB"  // light gray background
-        strokeWidth="6"
-        fill="none"
-      />
-      {/* Progress Ring */}
-      <circle
-        cx="60"
-        cy="60"
-        r="54"
-        stroke="#10B981" // primary
-        strokeWidth="6"
-        fill="none"
-        strokeLinecap="round"
-        strokeDasharray={`${2 * Math.PI * 54}`}
-        strokeDashoffset={`${2 * Math.PI * 54 * 0.3}`} // ~70% filled
-        transform="rotate(-90 60 60)" // start from top
-      />
-      {/* Text */}
-      <text
-        x="50%"
-        y="50%"
-        dominantBaseline="middle"
-        textAnchor="middle"
-        className="font-bold"
-        fontSize="18"
-        fill="#1F2937"
-      >
-        10,000+
-      </text>
-    </svg>
-    <p className="text-[#4B5563] text-sm font-medium">Students Empowered</p>
-  </div>
+  {/* Example Progress Ring Component */}
+  {[
+    { percent: 88.5, color: "#862121ff", label: "Students Empowered" }, // red
+    { percent: 73.1, color: "#0a063cff", label: "Institutions" }, // yellow
+    { percent: 61.5, color: "#0c4b12ff", label: "Reports Generated" }, // green
+  ].map((item, idx) => {
+    const radius = 54;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (item.percent / 100) * circumference;
 
-  {/* Institutions */}
-  <div className="flex flex-col items-center">
-    <svg width="140" height="140" viewBox="0 0 120 120" className="mb-3">
-      <circle
-        cx="60"
-        cy="60"
-        r="54"
-        stroke="#E5E7EB"
-        strokeWidth="6"
-        fill="none"
-      />
-      <circle
-        cx="60"
-        cy="60"
-        r="54"
-        stroke="#1F2937" // primary text
-        strokeWidth="6"
-        fill="none"
-        strokeLinecap="round"
-        strokeDasharray={`${2 * Math.PI * 54}`}
-        strokeDashoffset={`${2 * Math.PI * 54 * 0.5}`} // ~50% filled
-        transform="rotate(-90 60 60)"
-      />
-      <text
-        x="50%"
-        y="50%"
-        dominantBaseline="middle"
-        textAnchor="middle"
-        className="font-bold"
-        fontSize="18"
-        fill="#1F2937"
-      >
-        100+
-      </text>
-    </svg>
-    <p className="text-[#4B5563] text-sm font-medium">Institutions</p>
-  </div>
-
-  {/* Reports Generated */}
-  <div className="flex flex-col items-center">
-    <svg width="140" height="140" viewBox="0 0 120 120" className="mb-3">
-      <circle
-        cx="60"
-        cy="60"
-        r="54"
-        stroke="#E5E7EB"
-        strokeWidth="6"
-        fill="none"
-      />
-      <circle
-        cx="60"
-        cy="60"
-        r="54"
-        stroke="#4B5563" // secondary text
-        strokeWidth="6"
-        fill="none"
-        strokeLinecap="round"
-        strokeDasharray={`${2 * Math.PI * 54}`}
-        strokeDashoffset={`${2 * Math.PI * 54 * 0.7}`} // ~30% filled
-        transform="rotate(-90 60 60)"
-      />
-      <text
-        x="50%"
-        y="50%"
-        dominantBaseline="middle"
-        textAnchor="middle"
-        className="font-bold"
-        fontSize="18"
-        fill="#1F2937"
-      >
-        500+
-      </text>
-    </svg>
-    <p className="text-[#4B5563] text-sm font-medium">Reports Generated</p>
-  </div>
+    return (
+      <div key={idx} className="flex flex-col items-center">
+        <svg width="140" height="140" viewBox="0 0 120 120" className="mb-3">
+          {/* Background Ring */}
+          <circle
+            cx="60"
+            cy="60"
+            r={radius}
+            stroke="#E5E7EB"
+            strokeWidth="10"
+            fill="none"
+          />
+          {/* Progress Ring */}
+          <circle
+            cx="60"
+            cy="60"
+            r={radius}
+            stroke={item.color}
+            strokeWidth="10"
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            transform="rotate(-90 60 60)"
+          />
+          {/* Percentage Text */}
+          <text
+            x="50%"
+            y="50%"
+            dominantBaseline="middle"
+            textAnchor="middle"
+            className="font-bold"
+            fontSize="24"
+            fill="#1F2937"
+          >
+            {item.percent}%
+          </text>
+        </svg>
+        <p className="text-[#4B5563] text-sm font-medium">{item.label}</p>
+      </div>
+    );
+  })}
 </div>
+
 
         </div>
       </section>
@@ -226,7 +166,7 @@ const Home = () => {
       </section> */}
 
       {/* Key Features Section */}
-      <section className="py-12 bg-[#ECFDF5]">
+      {/* <section className="py-12 ">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-[#1F2937] mb-12">
             Key Features
@@ -274,10 +214,80 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
+
+      {/* Key Features Section */}
+<section className="py-12">
+  <div className="max-w-6xl mx-auto px-6 text-center">
+    <h2 className="text-3xl font-bold text-[#1F2937] mb-12">
+      Key Features
+    </h2>
+    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+      
+      {/* Card 1 */}
+      <div className="relative bg-white shadow-lg rounded-xl pt-12 pb-6 px-4 border border-[#10B981]   hover:shadow-xl hover:border-2 hover:border-[#10B981] transition duration-300">
+        {/* Circle for Icon */}
+        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#10B981] w-16 h-16 rounded-full flex items-center justify-center shadow-md">
+          <FiUser className="h-8 w-8 text-white" />
+        </div>
+        <h3 className="text-xl font-semibold text-[#1F2937] mb-2 mt-4">
+          Student Dashboard
+        </h3>
+        <p className="text-[#4B5563]">
+          Track grades, achievements, certificates, and career insights in
+          real time.
+        </p>
+      </div>
+
+      {/* Card 2 */}
+      <div className="relative bg-white shadow-lg rounded-xl pt-12 pb-6 px-4 border border-[#10B981]   hover:shadow-xl hover:border-2 hover:border-[#10B981] transition duration-300">
+        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#10B981] w-16 h-16 rounded-full flex items-center justify-center shadow-md">
+          <FiBookOpen className="h-8 w-8 text-white" />
+        </div>
+        <h3 className="text-xl font-semibold text-[#1F2937] mb-2 mt-4">
+          Faculty Approvals
+        </h3>
+        <p className="text-[#4B5563]">
+          Easily validate student submissions, attendance, and performance
+          data.
+        </p>
+      </div>
+
+      {/* Card 3 */}
+      <div className="relative bg-white shadow-lg rounded-xl pt-12 pb-6 px-4 border border-[#10B981]   hover:shadow-xl hover:border-2 hover:border-[#10B981] transition duration-300">
+        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#10B981] w-16 h-16 rounded-full flex items-center justify-center shadow-md">
+          <FiShield className="h-8 w-8 text-white" />
+        </div>
+        <h3 className="text-xl font-semibold text-[#1F2937] mb-2 mt-4">
+          Admin Reports
+        </h3>
+        <p className="text-[#4B5563]">
+          Generate NAAC/NIRF-ready reports and manage institute-level
+          insights.
+        </p>
+      </div>
+
+      {/* Card 4 */}
+      <div className="relative bg-white shadow-lg rounded-xl pt-12 pb-6 px-4 border border-[#10B981]   hover:shadow-xl hover:border-2 hover:border-[#10B981] transition duration-300">
+        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#10B981] w-16 h-16 rounded-full flex items-center justify-center shadow-md">
+          <FiTrendingUp className="h-8 w-8 text-white" />
+        </div>
+        <h3 className="text-xl font-semibold text-[#1F2937] mb-2 mt-4">
+          Portfolio Auto-Generation
+        </h3>
+        <p className="text-[#4B5563]">
+          Automatically build a verified professional portfolio for each
+          student from approved data.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 
       {/* How It Works Section */}
-      <section className="py-12">
+      <section className="py-12 bg-[#ECFDF5]">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-[#1F2937] mb-12">
             How It Works
@@ -341,7 +351,7 @@ const Home = () => {
       </section> */}
 
       {/* AI + Portfolio + Leaderboard Section */}
-      <section className="py-12 bg-[#ECFDF5]">
+      <section className="py-12 ">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-[#1F2937] mb-12">
             AI Career Tools, Portfolio & Leaderboard
