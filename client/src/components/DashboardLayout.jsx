@@ -8,7 +8,7 @@ const DashboardLayout = () => {
       {" "}
       {/* Added pt-16 for navbar height */}
       <Sidebar />
-      <main className="flex-1 overflow-y-auto p-4 md:p-6 mt-4">
+      <main className="flex-1 overflow-y-auto p-4 md:p-6">
         {" "}
         {/* Added mt-4 for spacing */}
         <Outlet />

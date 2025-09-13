@@ -159,11 +159,13 @@ const Sidebar = () => {
           <div className="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center text-white">
             <FiUser className="h-5 w-5" />
           </div>
-          <div className="ml-3">
-            <p className="font-medium text-sm">{user?.name || "User"}</p>
-            <p className="text-xs text-gray-500 capitalize">
+          <div className="ml-3 flex flex-col">
+            <span className="font-medium text-sm leading-tight">
+              {user?.name || "User"}
+            </span>
+            <span className="text-xs text-gray-500 capitalize mt-0.5">
               {user?.role || "Unknown"}
-            </p>
+            </span>
           </div>
         </div>
         {!isMobile && (
@@ -304,8 +306,8 @@ const Sidebar = () => {
   // Desktop sidebar
   return (
     <motion.div
-      initial={{ width: collapsed ? 80 : 256 }}
-      animate={{ width: collapsed ? 80 : 256 }}
+      initial={{ width: collapsed ? 150 : 256 }}
+      animate={{ width: collapsed ? 150 : 256 }}
       transition={{ duration: 0.2, ease: "easeInOut" }}
       className="hidden md:flex flex-shrink-0 h-full relative"
     >

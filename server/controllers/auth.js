@@ -150,11 +150,15 @@ module.exports.login = async (req, res) => {
 
   // Determine which model to use based on role
   if (role === "admin") {
-    user = await Admin.findOne({ email: identifier });
+    user = await Admin.findOne({ email: identifier }).populate("institute");
   } else if (role === "faculty") {
-    user = await Faculty.findOne({ employeeId: identifier });
+    user = await Faculty.findOne({ employeeId: identifier }).populate(
+      "institute"
+    );
   } else if (role === "student") {
-    user = await Student.findOne({ regNumber: identifier });
+    user = await Student.findOne({ regNumber: identifier }).populate(
+      "institute"
+    );
   } else {
     return res.status(400).json({ message: "Invalid role" });
   }
@@ -209,11 +213,11 @@ module.exports.verifySession = async (req, res) => {
   let user;
 
   if (role === "admin") {
-    user = await Admin.findById(req.user._id);
+    user = await Admin.findById(req.user._id).populate("institute");
   } else if (role === "faculty") {
-    user = await Faculty.findById(req.user._id);
+    user = await Faculty.findById(req.user._id).populate("institute");
   } else if (role === "student") {
-    user = await Student.findById(req.user._id);
+    user = await Student.findById(req.user._id).populate("institute");
   }
 
   if (!user) {
