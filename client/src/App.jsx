@@ -18,6 +18,12 @@ import DashboardLayout from "./components/DashboardLayout";
 import Institute from "./Pages/Admin/Institute";
 import Faculties from "./Pages/Admin/Faculties";
 import Students from "./Pages/Admin/Students";
+import Approval from "./Pages/Faculty/Approval";
+import StudentList from "./Pages/Faculty/StudentList";
+import StudentDetails from "./Pages/Faculty/StudentDetails";
+import Academics from "./Pages/Student/Academics";
+import ApplyApproval from "./Pages/Student/ApplyApproval";
+import Portfolio from "./Pages/Student/Portfolio";
 
 function App() {
   return (
@@ -49,10 +55,19 @@ function App() {
 
             <Route element={<ProtectedRoute role="faculty" />}>
               <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
+              <Route path="/faculty/students" element={<StudentList />} />
+              <Route
+                path="/faculty/students/:id"
+                element={<StudentDetails />}
+              />
+              <Route path="/faculty/approval" element={<Approval />} />"
             </Route>
 
             <Route element={<ProtectedRoute role="student" />}>
               <Route path="/student/dashboard" element={<StudentDashboard />} />
+              <Route path="/student/academics" element={<Academics />} />
+              <Route path="/student/approval" element={<ApplyApproval />} />
+              <Route path="/student/portfolio" element={<Portfolio />} />
             </Route>
 
             {/* Common protected routes for all roles */}

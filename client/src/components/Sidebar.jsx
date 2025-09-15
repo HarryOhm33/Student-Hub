@@ -84,44 +84,44 @@ const Sidebar = () => {
       return [
         ...commonItems,
         {
-          id: "courses",
-          label: "My Courses",
+          id: "students",
+          label: "Students",
           icon: FiBook,
-          path: "/faculty/courses",
+          path: "/faculty/students",
         },
         {
-          id: "schedule",
-          label: "Schedule",
+          id: "approval",
+          label: "Approval Panel",
           icon: FiCalendar,
-          path: "/faculty/schedule",
+          path: "/faculty/approval",
         },
-        {
-          id: "grades",
-          label: "Grade Management",
-          icon: FiFileText,
-          path: "/faculty/grades",
-        },
+        // {
+        //   id: "grades",
+        //   label: "Grade Management",
+        //   icon: FiFileText,
+        //   path: "/faculty/grades",
+        // },
       ];
     } else if (user?.role === "student") {
       return [
         ...commonItems,
         {
-          id: "courses",
-          label: "My Courses",
+          id: "academics",
+          label: "Academics",
           icon: FiBook,
-          path: "/student/courses",
+          path: "/student/academics",
         },
         {
-          id: "schedule",
-          label: "Class Schedule",
-          icon: FiCalendar,
-          path: "/student/schedule",
-        },
-        {
-          id: "grades",
-          label: "My Grades",
+          id: "approval",
+          label: "Approval",
           icon: FiFileText,
-          path: "/student/grades",
+          path: "/student/approval",
+        },
+        {
+          id: "portfolio",
+          label: "Portfolio",
+          icon: FiCalendar,
+          path: "/student/portfolio",
         },
       ];
     }

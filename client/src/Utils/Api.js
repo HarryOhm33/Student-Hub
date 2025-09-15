@@ -44,4 +44,23 @@ export const addStudent = (data) =>
 export const getStudentList = () =>
   axiosInstance.get("/api/admin/student-list");
 
+// ===================== Faculty APIs ===================
+
+export const getStudentListFaculty = () =>
+  axiosInstance.get("/api/faculty/students");
+
+export const getStudentById = (data) =>
+  axiosInstance.post("/api/faculty/student", data);
+
+export const addGrade = (data) =>
+  axiosInstance.post("/api/faculty/student/grade", data);
+
+export const addAttendance = (data) =>
+  axiosInstance.post("/api/faculty/student/attendance", data);
+
+// ===================== Student APIs ==================
+
+export const getAcademics = (data) =>
+  axiosInstance.get("api/student/academics", data);
+
 export default axiosInstance;
