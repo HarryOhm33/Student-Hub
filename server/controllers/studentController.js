@@ -233,8 +233,8 @@ module.exports.uploadPortfolioFile = async (req, res) => {
   const { title, description } = req.body;
   const studentId = req.user._id;
 
-  console.log(req.file);
-  console.log(req.body);
+  //   console.log(req.file);
+  //   console.log(req.body);
 
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });

@@ -15,6 +15,7 @@ import {
   FiShield,
 } from "react-icons/fi";
 import { useState, useRef, useEffect } from "react";
+import logo from "../assets/logo.png";
 
 const Navbar = () => {
   const { user, logout, loading } = useAuth();
@@ -106,15 +107,18 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white border-b border-gray-200 shadow-sm relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1">
+        <div className="flex justify-between">
           {/* Logo/Brand */}
-          <div className="flex items-center">
+          <div className="flex items-center space-x-2">
             <Link
               to="/"
               className="flex-shrink-0 flex items-center text-xl font-bold"
             >
-              <span className="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
+              {/* Logo Image */}
+              <img src={logo} alt="Logo" className="w-18 object-contain" />
+              {/* Brand Name */}
+              <span className="ml-2 bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
                 Pratibha-Kosh
               </span>
             </Link>

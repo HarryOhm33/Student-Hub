@@ -24,6 +24,7 @@ import StudentDetails from "./Pages/Faculty/StudentDetails";
 import Academics from "./Pages/Student/Academics";
 import ApplyApproval from "./Pages/Student/ApplyApproval";
 import Portfolio from "./Pages/Student/Portfolio";
+import Reports from "./Pages/Admin/Reports";
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
               <Route path="/admin/faculties" element={<Faculties />} />
               <Route path="/admin/students" element={<Students />} />
               <Route path="/admin/institute" element={<Institute />} />
+              <Route path="/admin/reports" element={<Reports />} />
             </Route>
 
             <Route element={<ProtectedRoute role="faculty" />}>

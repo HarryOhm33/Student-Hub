@@ -13,7 +13,6 @@ import {
   FiBook,
   FiAward,
 } from "react-icons/fi";
-import { Link } from "react-router-dom";
 
 const Login = () => {
   const [activeTab, setActiveTab] = useState("admin");
@@ -123,12 +122,12 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-gray-100 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-200"
+        className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-100"
       >
         <div className="text-center mb-8">
           <motion.div
@@ -142,7 +141,7 @@ const Login = () => {
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
             Welcome Back
           </h1>
-          <p className="text-gray-600">Log in to your account</p>
+          <p className="text-gray-600">Sign in to continue to your account</p>
         </div>
 
         {/* Role Selection Tabs */}
@@ -154,7 +153,7 @@ const Login = () => {
               whileTap={{ scale: 0.98 }}
               className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
                 activeTab === role
-                  ? "bg-green-600 text-white shadow"
+                  ? "bg-green-600 text-white shadow-md"
                   : "text-gray-600 hover:text-green-700"
               }`}
               onClick={() => setActiveTab(role)}
@@ -209,13 +208,13 @@ const Login = () => {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:from-green-600 hover:to-green-700 transition-all shadow-md"
+            className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:from-green-600 hover:to-green-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
               <>
-                Login <FiArrowRight className="h-5 w-5" />
+                Sign In <FiArrowRight className="h-5 w-5" />
               </>
             )}
           </motion.button>
@@ -236,6 +235,35 @@ const Login = () => {
               Sign Up
             </button>
           </p>
+        </motion.div>
+
+        {/* Demo Credentials */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg text-sm text-gray-700"
+        >
+          <h3 className="font-semibold text-green-800 mb-2 text-center">
+            Demo Credentials
+          </h3>
+          <div className="space-y-2">
+            <div>
+              <span className="font-medium text-green-700">Admin:</span>
+              <p className="text-xs">Email: hari333333om@gmail.com</p>
+              <p className="text-xs">Password: 1234</p>
+            </div>
+            <div>
+              <span className="font-medium text-green-700">Faculty:</span>
+              <p className="text-xs">Employee ID: EMPDCE1017290</p>
+              <p className="text-xs">Password: 1234</p>
+            </div>
+            <div>
+              <span className="font-medium text-green-700">Student:</span>
+              <p className="text-xs">Registration No.: 23874111999</p>
+              <p className="text-xs">Password: 1234</p>
+            </div>
+          </div>
         </motion.div>
       </motion.div>
     </div>

@@ -17,7 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const Students = () => {
   const { user } = useAuth();
-  console.log(user);
+  // console.log(user);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -27,6 +27,7 @@ const Students = () => {
     password: "",
     departmentName: "",
     regNumber: "",
+    aadhar: "",
     courseName: "",
     year: "",
   });
@@ -66,6 +67,7 @@ const Students = () => {
           departmentName: "",
           regNumber: "",
           courseName: "",
+          aadhar: "",
           year: "",
         });
         fetchStudents(); // Refresh the list
@@ -126,6 +128,9 @@ const Students = () => {
                   Registration Number
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-[#1F2937] uppercase tracking-wider">
+                  Aadhar Number
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#1F2937] uppercase tracking-wider">
                   Department
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-[#1F2937] uppercase tracking-wider">
@@ -154,6 +159,9 @@ const Students = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
                     {student.regNumber}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
+                    {student.aadhar}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
                     {student.department}
@@ -233,6 +241,19 @@ const Students = () => {
                     name="regNumber"
                     placeholder="Registration Number"
                     value={formData.regNumber}
+                    onChange={handleInputChange}
+                    className="pl-10 w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-[#1F2937] placeholder-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
+                    required
+                  />
+                </div>
+
+                <div className="relative">
+                  <FiHash className="absolute left-3 top-3 h-5 w-5 text-[#4B5563]" />
+                  <input
+                    type="text"
+                    name="aadhar"
+                    placeholder="Aadhar Number"
+                    value={formData.aadhar}
                     onChange={handleInputChange}
                     className="pl-10 w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-[#1F2937] placeholder-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
                     required

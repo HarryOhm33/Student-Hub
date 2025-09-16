@@ -9,6 +9,7 @@ const studentSchema = new mongoose.Schema(
     department: { type: String, required: true },
     course: { type: String, required: true },
     year: { type: String, required: true },
+    aadhar: { type: String, required: true }, // fixed
     role: { type: String, default: "student" },
     institute: {
       type: mongoose.Schema.Types.ObjectId,

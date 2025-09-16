@@ -79,6 +79,12 @@ const Sidebar = () => {
           icon: FiBook,
           path: "/admin/institute",
         },
+        {
+          id: "reports",
+          label: "Reports",
+          icon: FiFileText,
+          path: "/admin/reports",
+        },
       ];
     } else if (user?.role === "faculty") {
       return [

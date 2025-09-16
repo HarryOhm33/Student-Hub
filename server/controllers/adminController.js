@@ -165,8 +165,18 @@ module.exports.getFacultyList = async (req, res) => {
 };
 
 module.exports.addStudent = async (req, res) => {
-  const { name, email, password, regNumber, departmentName, courseName, year } =
-    req.body;
+  const {
+    name,
+    email,
+    password,
+    regNumber,
+    departmentName,
+    courseName,
+    year,
+    aadhar,
+  } = req.body;
+
+  // console.log(req.body);
 
   // Check if student already exists
   const existingStudent = await Student.findOne({
@@ -216,6 +226,7 @@ module.exports.addStudent = async (req, res) => {
     year,
     institute: req.user.institute,
     regNumber,
+    aadhar,
   });
 
   const htmlContent = generateStudentWelcomeEmail(
