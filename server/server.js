@@ -15,6 +15,8 @@ const port = process.env.PORT;
 const ExpressError = require("./utils/ExpressError");
 const authRoute = require("./routes/authRoute");
 const adminRoute = require("./routes/adminRoute");
+const facultyRoute = require("./routes/facultyRoute");
+const studentRoute = require("./routes/studentRoute");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -34,6 +36,8 @@ app.use(cors(corsOptions)); // ✅ CORS Middleware
 
 app.use("/api/auth", authRoute);
 app.use("/api/admin", adminRoute);
+app.use("/api/faculty", facultyRoute);
+app.use("/api/student", studentRoute);
 
 app.all("*", (req, res, next) => {
   next(new ExpressError(404, "Not a Valid Route"));

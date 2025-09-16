@@ -213,7 +213,7 @@ const Sidebar = () => {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
+      {/* <div className="p-4 border-t border-gray-200">
         <motion.button
           whileHover={{ x: 4 }}
           whileTap={{ scale: 0.98 }}
@@ -223,7 +223,7 @@ const Sidebar = () => {
           <FiLogOut className="h-5 w-5" />
           {!collapsed && <span className="ml-3">Logout</span>}
         </motion.button>
-      </div>
+      </div> */}
     </div>
   );
 

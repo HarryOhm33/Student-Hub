@@ -14,8 +14,10 @@ import {
   FiEdit,
   FiCheck,
   FiX,
-  FiPercent,
   FiAward,
+  FiFileText,
+  FiExternalLink,
+  FiActivity,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -27,9 +29,11 @@ const StudentDetails = () => {
   const [student, setStudent] = useState(null);
   const [attendance, setAttendance] = useState(null);
   const [grade, setGrade] = useState(null);
+  const [approvedActivities, setApprovedActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingGrade, setEditingGrade] = useState(false);
   const [editingAttendance, setEditingAttendance] = useState(false);
+  const [activeActivityTab, setActiveActivityTab] = useState("all");
   const [gradeForm, setGradeForm] = useState({ cgpa: "" });
   const [attendanceForm, setAttendanceForm] = useState({
     totalHeld: "",
@@ -48,6 +52,7 @@ const StudentDetails = () => {
         setStudent(response.data.student);
         setAttendance(response.data.attendance);
         setGrade(response.data.grade);
+        setApprovedActivities(response.data.approvedActivities || []);
 
         // Initialize forms with existing data
         if (response.data.grade) {
@@ -130,6 +135,37 @@ const StudentDetails = () => {
     return "text-red-600";
   };
 
+  const getActivityTypeColor = (type) => {
+    switch (type) {
+      case "Curricular":
+        return "bg-blue-100 text-blue-800";
+      case "Co-Curricular":
+        return "bg-purple-100 text-purple-800";
+      case "Extra-Curricular":
+        return "bg-green-100 text-green-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const filterActivitiesByType = (type) => {
+    if (type === "all") return approvedActivities;
+    return approvedActivities.filter(
+      (activity) =>
+        activity.activityType === type ||
+        (type === "Curricular" && !activity.activityType) // Handle legacy data
+    );
+  };
+
+  const getActivityTypeCount = (type) => {
+    if (type === "all") return approvedActivities.length;
+    return approvedActivities.filter(
+      (activity) =>
+        activity.activityType === type ||
+        (type === "Curricular" && !activity.activityType)
+    ).length;
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -152,6 +188,8 @@ const StudentDetails = () => {
     );
   }
 
+  const filteredActivities = filterActivitiesByType(activeActivityTab);
+
   return (
     <div className="p-6">
       {/* Header */}
@@ -171,7 +209,7 @@ const StudentDetails = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Student Information Card */}
         <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-bold text-[#1F2937] mb-4">
@@ -417,6 +455,123 @@ const StudentDetails = () => {
             <p className="text-[#4B5563]">No grade record found.</p>
           )}
         </div>
+      </div>
+
+      {/* Approved Activities Section */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-[#1F2937]">
+              Approved Activities
+            </h2>
+            <p className="text-[#4B5563]">
+              Student's approved extracurricular activities
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <FiActivity className="h-5 w-5 text-[#10B981]" />
+            <span className="text-sm font-medium text-[#4B5563]">
+              Total: {approvedActivities.length}
+            </span>
+          </div>
+        </div>
+
+        {/* Activity Tabs */}
+        <div className="bg-gray-100 rounded-lg p-1 mb-6">
+          <div className="flex overflow-x-auto">
+            {["all", "Curricular", "Co-Curricular", "Extra-Curricular"].map(
+              (tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveActivityTab(tab)}
+                  className={`px-4 py-2 font-medium text-sm whitespace-nowrap rounded-md ${
+                    activeActivityTab === tab
+                      ? "bg-white text-[#10B981] shadow-sm"
+                      : "text-[#4B5563] hover:text-[#1F2937]"
+                  }`}
+                >
+                  {tab === "all" ? "All Activities" : tab}
+                  <span className="ml-2 px-2 py-1 bg-gray-200 rounded-full text-xs">
+                    {getActivityTypeCount(tab)}
+                  </span>
+                </button>
+              )
+            )}
+          </div>
+        </div>
+
+        {/* Activities List */}
+        {filteredActivities.length === 0 ? (
+          <div className="text-center py-8">
+            <FiFileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-[#4B5563]">
+              {activeActivityTab === "all"
+                ? "No approved activities found."
+                : `No ${activeActivityTab} activities found.`}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredActivities.map((activity) => (
+              <motion.div
+                key={activity._id}
+                whileHover={{ scale: 1.02 }}
+                className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="font-medium text-[#1F2937]">
+                      {activity.title}
+                    </h3>
+                    <p className="text-sm text-[#4B5563]">
+                      {activity.credentialId}
+                    </p>
+                  </div>
+                  {activity.activityType && (
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${getActivityTypeColor(
+                        activity.activityType
+                      )}`}
+                    >
+                      {activity.activityType}
+                    </span>
+                  )}
+                </div>
+
+                <p className="text-sm text-[#4B5563] mb-3 line-clamp-2">
+                  {activity.description}
+                </p>
+
+                {activity.remarks && (
+                  <div className="mb-3">
+                    <p className="text-xs font-medium text-[#4B5563]">
+                      Remarks:
+                    </p>
+                    <p className="text-xs text-[#6B7280]">{activity.remarks}</p>
+                  </div>
+                )}
+
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-[#6B7280]">
+                    {new Date(activity.createdAt).toLocaleDateString()}
+                  </span>
+                  {activity.attachmentLink && (
+                    <motion.a
+                      whileHover={{ scale: 1.1 }}
+                      href={activity.attachmentLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-1 text-blue-600 hover:bg-blue-100 rounded"
+                      title="View Attachment"
+                    >
+                      <FiExternalLink className="h-4 w-4" />
+                    </motion.a>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

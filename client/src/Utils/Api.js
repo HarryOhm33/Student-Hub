@@ -58,9 +58,24 @@ export const addGrade = (data) =>
 export const addAttendance = (data) =>
   axiosInstance.post("/api/faculty/student/attendance", data);
 
+export const getActivitiesFaculty = () =>
+  axiosInstance.get("/api/faculty/activities");
+
+export const validateActivity = (data) =>
+  axiosInstance.post("/api/faculty/validate-activity", data);
+
 // ===================== Student APIs ==================
 
 export const getAcademics = (data) =>
-  axiosInstance.get("api/student/academics", data);
+  axiosInstance.get("api/student/academics");
+
+export const getFacultyListStudent = (data) =>
+  axiosInstance.get("api/student/faculty-list");
+
+export const applyActivityApproval = (data) =>
+  axiosInstance.post("api/student/apply-activity", data);
+
+export const getMyActivities = (data) =>
+  axiosInstance.get("api/student/my-activities");
 
 export default axiosInstance;

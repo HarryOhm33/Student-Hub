@@ -3,7 +3,8 @@
 		"_postman_id": "8f1b7e39-7e83-4cc3-8907-2de125272e2c",
 		"name": "Student-Hub",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "42587049"
+		"_exporter_id": "42587049",
+		"_collection_link": "https://wall-team-5061.postman.co/workspace/My-Workspace~6af1bf28-8345-4c2e-8db0-6505e1f487bc/collection/42587049-8f1b7e39-7e83-4cc3-8907-2de125272e2c?action=share&source=collection_link&creator=42587049"
 	},
 	"item": [
 		{
@@ -309,6 +310,25 @@
 								"api",
 								"admin",
 								"add-student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "student list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/student-list",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"student-list"
 							]
 						}
 					},
