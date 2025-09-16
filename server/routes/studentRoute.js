@@ -6,11 +6,22 @@ const { checkStudent } = require("../middleware/checkRole");
 const wrapAsync = require("../utils/wrapAsync");
 
 const {
+  getDashboardData,
   getMyAcademics,
   getFacultyList,
   applyActivity,
   getMyActivities,
+  getMyPortfolios,
+  uploadPortfolioFile,
+  getPortfolioById,
 } = require("../controllers/studentController");
+
+router.get(
+  "/dashboard",
+  authenticate,
+  checkStudent,
+  wrapAsync(getDashboardData)
+);
 
 // Single route to fetch student's attendance & grade
 router.get("/academics", authenticate, checkStudent, wrapAsync(getMyAcademics));
@@ -36,5 +47,25 @@ router.get(
   checkStudent, // only students
   wrapAsync(getMyActivities)
 );
+
+// Upload student's portfolio
+router.post(
+  "/portfolio/upload",
+  authenticate,
+  checkStudent,
+  upload.single("file"),
+  wrapAsync(uploadPortfolioFile)
+);
+
+// Student list their own portfolios
+router.get(
+  "/portfolio/my",
+  authenticate,
+  checkStudent,
+  wrapAsync(getMyPortfolios)
+);
+
+// Get portfolio by id (student/faculty/admin can view if same institute or owner)
+// router.get("/portfolio/:id", authenticate, wrapAsync(getPortfolioById));
 
 module.exports = router;

@@ -66,16 +66,24 @@ export const validateActivity = (data) =>
 
 // ===================== Student APIs ==================
 
-export const getAcademics = (data) =>
-  axiosInstance.get("api/student/academics");
+export const getStudentDashboard = () =>
+  axiosInstance.get("api/student/dashboard");
 
-export const getFacultyListStudent = (data) =>
+export const getAcademics = () => axiosInstance.get("api/student/academics");
+
+export const getFacultyListStudent = () =>
   axiosInstance.get("api/student/faculty-list");
 
 export const applyActivityApproval = (data) =>
   axiosInstance.post("api/student/apply-activity", data);
 
-export const getMyActivities = (data) =>
+export const getMyActivities = () =>
   axiosInstance.get("api/student/my-activities");
+
+export const uploadPortfolio = (data) =>
+  axiosInstance.post("api/student/portfolio/upload", data);
+
+export const getMyPortfolios = () =>
+  axiosInstance.get("api/student/portfolio/my");
 
 export default axiosInstance;

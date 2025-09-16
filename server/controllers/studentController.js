@@ -2,7 +2,122 @@ const Attendance = require("../models/attendance");
 const Grade = require("../models/grade");
 const Activity = require("../models/activity");
 const Faculty = require("../models/faculty");
+const Student = require("../models/student");
+const StudentPortfolio = require("../models/studentPortfolio");
 const cloudinary = require("../config/coudinary");
+const PDFDocument = require("pdfkit");
+
+// ================== Get Dashboard Data (processed for charts/cards) ==================
+module.exports.getDashboardData = async (req, res) => {
+  const studentId = req.user._id;
+
+  // --- Student Info ---
+  const student = await Student.findById(studentId).select("-password");
+  if (!student) {
+    return res.status(404).json({ message: "Student not found" });
+  }
+
+  // --- Academics ---
+  const attendance = await Attendance.findOne({ student: studentId });
+  const grade = await Grade.findOne({ student: studentId });
+
+  // --- Activities ---
+  const activities = await Activity.find({ student: studentId });
+
+  // Attendance Stats
+  let attendancePercent = 0;
+  if (attendance?.totalHeld > 0) {
+    attendancePercent = (
+      (attendance.totalAttended / attendance.totalHeld) *
+      100
+    ).toFixed(2);
+  }
+
+  // Activities Stats
+  const totalActivities = activities.length;
+  const approvedActivities = activities.filter(
+    (a) => a.status === "Approved"
+  ).length;
+  const pendingActivities = activities.filter(
+    (a) => a.status === "Pending"
+  ).length;
+  const rejectedActivities = activities.filter(
+    (a) => a.status === "Rejected"
+  ).length;
+
+  // Build Dashboard Response
+  const dashboardData = {
+    student: {
+      name: student.name,
+      regNumber: student.regNumber,
+      email: student.email,
+      department: student.department,
+    },
+    academics: {
+      cgpa: grade?.cgpa || null,
+      attendance: {
+        totalHeld: attendance?.totalHeld || 0,
+        totalAttended: attendance?.totalAttended || 0,
+        percentage: attendancePercent,
+      },
+    },
+    activities: {
+      total: totalActivities,
+      approved: approvedActivities,
+      pending: pendingActivities,
+      rejected: rejectedActivities,
+      breakdown: {
+        curricular: activities.filter((a) => a.activityType === "Curricular")
+          .length,
+        coCurricular: activities.filter(
+          (a) => a.activityType === "Co-Curricular"
+        ).length,
+        extraCurricular: activities.filter(
+          (a) => a.activityType === "Extra-Curricular"
+        ).length,
+      },
+    },
+    // Example chart data structure (you can map directly in frontend)
+    charts: {
+      attendanceTrend: [
+        { label: "Attended", value: attendance?.totalAttended || 0 },
+        {
+          label: "Missed",
+          value:
+            (attendance?.totalHeld || 0) - (attendance?.totalAttended || 0),
+        },
+      ],
+      activityStatus: [
+        { label: "Approved", value: approvedActivities },
+        { label: "Pending", value: pendingActivities },
+        { label: "Rejected", value: rejectedActivities },
+      ],
+      activityTypes: [
+        {
+          label: "Curricular",
+          value: activities.filter((a) => a.activityType === "Curricular")
+            .length,
+        },
+        {
+          label: "Co-Curricular",
+          value: activities.filter((a) => a.activityType === "Co-Curricular")
+            .length,
+        },
+        {
+          label: "Extra-Curricular",
+          value: activities.filter((a) => a.activityType === "Extra-Curricular")
+            .length,
+        },
+      ],
+    },
+  };
+
+  res.status(200).json({
+    valid: true,
+    message: "Dashboard data fetched successfully",
+    dashboard: dashboardData,
+  });
+};
 
 // ================== Get Student Performance ==================
 
@@ -111,3 +226,94 @@ module.exports.getMyActivities = async (req, res) => {
     activities,
   });
 };
+
+// ================== Upload Portfolios (student) ==================
+
+module.exports.uploadPortfolioFile = async (req, res) => {
+  const { title, description } = req.body;
+  const studentId = req.user._id;
+
+  console.log(req.file);
+  console.log(req.body);
+
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  // Upload file buffer to Cloudinary as raw (for PDF/docx/etc.)
+  const uploadResult = await new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "student_portfolios",
+        resource_type: "raw", // ✅ ensures proper MIME for PDF
+        public_id: `${studentId}_${Date.now()}`,
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+    uploadStream.end(req.file.buffer);
+  });
+
+  // Save in DB
+  const portfolio = await StudentPortfolio.create({
+    student: studentId,
+    title: title || `${req.user.name}'s Portfolio`,
+    description: description || "",
+    fileUrl: uploadResult.secure_url, // works for open/download
+    publicId: uploadResult.public_id,
+    institute: req.user.institute,
+  });
+
+  res.status(200).json({
+    valid: true,
+    message: "Portfolio uploaded successfully",
+    portfolio,
+  });
+};
+
+// ================== Get My Portfolios (student) ==================
+module.exports.getMyPortfolios = async (req, res) => {
+  const portfolios = await StudentPortfolio.find({
+    student: req.user._id,
+  }).sort({ createdAt: -1 });
+
+  if (!portfolios || portfolios.length === 0) {
+    return res.status(404).json({ message: "No portfolios found" });
+  }
+
+  res.status(200).json({
+    valid: true,
+    message: "Portfolios fetched successfully",
+    portfolios,
+  });
+};
+
+// ================== Get Portfolio By Id (student/admin/faculty) ==================
+// module.exports.getPortfolioById = async (req, res) => {
+//   const { id } = req.params;
+
+//   const portfolio = await StudentPortfolio.findById(id).populate(
+//     "student",
+//     "name regNumber email"
+//   );
+
+//   if (!portfolio) {
+//     return res.status(404).json({ message: "Portfolio not found" });
+//   }
+
+//   // optional: restrict access — for now return if same institute OR owner
+//   if (
+//     String(portfolio.institute) !== String(req.user.institute) &&
+//     String(portfolio.student._id) !== String(req.user._id)
+//   ) {
+//     return res.status(403).json({ message: "Access denied" });
+//   }
+
+//   res.status(200).json({
+//     valid: true,
+//     message: "Portfolio fetched successfully",
+//     portfolio,
+//   });
+// };
