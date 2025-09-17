@@ -15,11 +15,10 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-export const getInstituteWiseStatsAsdhar = (data) =>
+export const getInstituteWiseStatsAadhar = (data) =>
   axiosInstance.post("/api/open/institute-stats", data);
 
-export const getInstituteStatsByAadhar = () =>
-  axiosInstance.get("/api/open/institute-stats");
+export const getHomeData = () => axiosInstance.get("/api/open/home-data");
 
 // ===================== Admin APIs =====================
 

@@ -89,11 +89,6 @@ const Navbar = () => {
           label: "Dashboard",
           icon: <FiGrid className="h-5 w-5" />,
         },
-        // {
-        //   path: "/profile",
-        //   label: "Profile",
-        //   icon: <FiUser className="h-5 w-5" />,
-        // },
       ];
     }
 
@@ -121,41 +116,45 @@ const Navbar = () => {
   const navItems = getNavItems();
 
   return (
-    <nav className="bg-white border-b border-gray-200 shadow-sm relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1">
-        <div className="flex justify-between">
+    <nav className="bg-white border-b border-gray-200 shadow-sm relative sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
           {/* Logo/Brand */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center">
             <Link
               to="/"
               className="flex-shrink-0 flex items-center text-xl font-bold"
             >
               {/* Logo Image */}
-              <img src={logo} alt="Logo" className="w-18 object-contain" />
+              <img
+                src={logo}
+                alt="Logo"
+                className="h-10 w-auto object-contain"
+              />
               {/* Brand Name */}
-              <span className="ml-2 bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
+              <span className="ml-2 bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent hidden sm:block">
                 Pratibha-Kosh
               </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-2">
+          <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => (
               <motion.div
                 key={item.path}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
               >
                 <Link
                   to={item.path}
-                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                     location.pathname === item.path
-                      ? "text-white bg-green-600"
-                      : "text-gray-700 hover:text-green-600 hover:bg-green-50"
+                      ? "text-white bg-gradient-to-r from-green-600 to-emerald-500 shadow-md"
+                      : "text-gray-600 hover:text-emerald-600 hover:bg-emerald-50"
                   }`}
                 >
-                  <span className="mr-1">{item.icon}</span>
+                  <span className="mr-1.5">{item.icon}</span>
                   {item.label}
                 </Link>
               </motion.div>
@@ -164,64 +163,62 @@ const Navbar = () => {
             {/* Show logout button only when user is authenticated and not loading */}
             {user && !loading && (
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handleLogout}
-                className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors"
+                className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-200 ml-2"
               >
-                <FiLogOut className="h-5 w-5 mr-1" />
+                <FiLogOut className="h-5 w-5 mr-1.5" />
                 Logout
               </motion.button>
             )}
 
             {/* Show loading indicator during authentication */}
             {loading && (
-              <div className="flex items-center text-gray-500 px-3 py-2">
+              <div className="flex items-center text-gray-500 px-3 py-2 ml-2">
                 <FiLoader className="h-5 w-5 animate-spin mr-2" />
-                Authenticating...
+                <span className="text-sm">Loading...</span>
               </div>
             )}
-
-            {/* Role-based quick access buttons */}
-            {/* {!user && !loading && (
-              <div className="flex items-center space-x-2 ml-4 pl-4 border-l border-gray-200">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate("/auth/login?role=student")}
-                  className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors"
-                >
-                  <FiUser className="h-4 w-4 mr-1" />
-                  Student
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate("/auth/login?role=faculty")}
-                  className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors"
-                >
-                  <FiBookOpen className="h-4 w-4 mr-1" />
-                  Faculty
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate("/auth/login?role=admin")}
-                  className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors"
-                >
-                  <FiShield className="h-4 w-4 mr-1" />
-                  Admin
-                </motion.button>
-              </div>
-            )} */}
           </div>
+
+          {/* User status indicator for desktop */}
+          {/* <div className="hidden md:flex items-center ml-4 pl-4 border-l border-gray-200">
+            {user && !loading ? (
+              <div className="flex items-center">
+                <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <span className="text-emerald-700 font-medium text-sm">
+                    {user.role?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div className="ml-2">
+                  <p className="text-xs text-gray-500">Logged in as</p>
+                  <p className="text-sm font-medium text-gray-800 capitalize">
+                    {user.role}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              !loading && (
+                <div className="text-sm text-gray-500">Guest User</div>
+              )
+            )}
+          </div> */}
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
+            {user && !loading && (
+              <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center mr-3">
+                <span className="text-emerald-700 font-medium text-sm">
+                  {user.role?.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            )}
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={toggleMobileMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-green-600 hover:bg-green-50 focus:outline-none"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 focus:outline-none transition-colors"
+              aria-expanded="false"
             >
               {isMobileMenuOpen ? (
                 <FiX className="block h-6 w-6" />
@@ -233,34 +230,70 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation - Positioned in top right corner */}
+      {/* Mobile Navigation */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <div className="absolute top-full right-0 z-50 md:hidden">
+          <div className="fixed inset-0 z-50 md:hidden mt-16">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black bg-opacity-10"
+              onClick={closeMobileMenu}
+            ></motion.div>
+
             <motion.div
               ref={mobileMenuRef}
-              initial={{ opacity: 0, scale: 0.95, y: -10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -10 }}
-              transition={{ duration: 0.15 }}
-              className="bg-white border border-gray-200 rounded-lg shadow-xl w-56 mt-1 mr-2 overflow-hidden"
+              initial={{ opacity: 0, x: 300 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 300 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="absolute top-0 right-0 bg-white w-64 h-full shadow-xl overflow-y-auto"
             >
-              <div className="py-1">
+              <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <div className="flex items-center">
+                  {user && !loading ? (
+                    <>
+                      <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                        <span className="text-emerald-700 font-medium">
+                          {user.role?.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-xs text-gray-500">Logged in as</p>
+                        <p className="text-sm font-medium text-gray-800 capitalize">
+                          {user.role}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-sm font-medium text-gray-800">
+                      Guest User
+                    </p>
+                  )}
+                </div>
+                <button
+                  onClick={closeMobileMenu}
+                  className="p-1 rounded-md text-gray-400 hover:text-gray-600"
+                >
+                  <FiX className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="py-2 px-3">
                 {navItems.map((item) => (
-                  <motion.div
-                    key={item.path}
-                    whileHover={{ backgroundColor: "#f0fdf4" }}
-                  >
+                  <motion.div key={item.path} whileTap={{ scale: 0.98 }}>
                     <Link
                       to={item.path}
                       onClick={closeMobileMenu}
-                      className={`flex items-center px-4 py-3 text-sm transition-colors ${
+                      className={`flex items-center px-4 py-3 rounded-md text-sm transition-all my-1 ${
                         location.pathname === item.path
-                          ? "text-white bg-green-600"
-                          : "text-gray-700 hover:text-green-600"
+                          ? "text-white bg-gradient-to-r from-green-600 to-emerald-500 shadow-md"
+                          : "text-gray-600 hover:bg-emerald-50 hover:text-emerald-700"
                       }`}
                     >
-                      <span className="mr-2">{item.icon}</span>
+                      <span className="mr-3">{item.icon}</span>
                       {item.label}
                     </Link>
                   </motion.div>
@@ -268,12 +301,12 @@ const Navbar = () => {
 
                 {/* Show logout button only when user is authenticated and not loading */}
                 {user && !loading && (
-                  <motion.div whileHover={{ backgroundColor: "#f0fdf4" }}>
+                  <motion.div whileTap={{ scale: 0.98 }}>
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:text-green-600 transition-colors"
+                      className="w-full flex items-center px-4 py-3 rounded-md text-sm text-gray-600 hover:bg-red-50 hover:text-red-700 transition-all my-1"
                     >
-                      <FiLogOut className="h-5 w-5 mr-2" />
+                      <FiLogOut className="h-5 w-5 mr-3" />
                       Logout
                     </button>
                   </motion.div>
@@ -282,51 +315,10 @@ const Navbar = () => {
                 {/* Show loading indicator during authentication */}
                 {loading && (
                   <div className="flex items-center px-4 py-3 text-sm text-gray-500">
-                    <FiLoader className="h-5 w-5 animate-spin mr-2" />
-                    Authenticating...
+                    <FiLoader className="h-5 w-5 animate-spin mr-3" />
+                    Loading...
                   </div>
                 )}
-
-                {/* Role-based quick access buttons for mobile */}
-                {/* {!user && !loading && (
-                  <div className="border-t border-gray-100 pt-2 mt-2">
-                    <div className="px-2 space-y-1">
-                      <motion.button
-                        whileHover={{ backgroundColor: "#f0fdf4" }}
-                        onClick={() => {
-                          navigate("/auth/login?role=student");
-                          closeMobileMenu();
-                        }}
-                        className="w-full flex items-center px-3 py-2 rounded text-sm text-gray-700 hover:text-green-600 transition-colors"
-                      >
-                        <FiUser className="h-4 w-4 mr-2" />
-                        Student Login
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ backgroundColor: "#f0fdf4" }}
-                        onClick={() => {
-                          navigate("/auth/login?role=faculty");
-                          closeMobileMenu();
-                        }}
-                        className="w-full flex items-center px-3 py-2 rounded text-sm text-gray-700 hover:text-green-600 transition-colors"
-                      >
-                        <FiBookOpen className="h-4 w-4 mr-2" />
-                        Faculty Login
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ backgroundColor: "#f0fdf4" }}
-                        onClick={() => {
-                          navigate("/auth/login?role=admin");
-                          closeMobileMenu();
-                        }}
-                        className="w-full flex items-center px-3 py-2 rounded text-sm text-gray-700 hover:text-green-600 transition-colors"
-                      >
-                        <FiShield className="h-4 w-4 mr-2" />
-                        Admin Login
-                      </motion.button>
-                    </div>
-                  </div>
-                )} */}
               </div>
             </motion.div>
           </div>

@@ -6,6 +6,7 @@ const Attendance = require("../models/attendance");
 const Grade = require("../models/grade");
 const Activity = require("../models/activity");
 const Institute = require("../models/institute");
+const Report = require("../models/report");
 
 module.exports.getInstituteWiseStatsByAadhar = async (req, res) => {
   const { aadhar } = req.body;
@@ -113,5 +114,21 @@ module.exports.getInstituteWiseStatsByAadhar = async (req, res) => {
     message: "Institute-level stats fetched for given aadhar",
     aadhar,
     institutes: institutesStats,
+  });
+};
+
+module.exports.getHomeData = async (req, res) => {
+  const studentCount = await Student.countDocuments();
+  const instituteCount = await Institute.countDocuments();
+  const reportCount = await Report.countDocuments();
+
+  res.status(200).json({
+    valid: true,
+    message: "Home data fetched successfully",
+    data: {
+      studentCount,
+      instituteCount,
+      reportCount,
+    },
   });
 };

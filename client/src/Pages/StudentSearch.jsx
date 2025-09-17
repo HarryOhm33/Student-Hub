@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { getInstituteWiseStatsAsdhar } from "../Utils/Api";
+import { getInstituteWiseStatsAadhar } from "../Utils/Api";
 import { motion } from "framer-motion";
 import {
   FiSearch,
@@ -42,7 +42,7 @@ const StudentSearch = () => {
 
     try {
       setLoading(true);
-      const response = await getInstituteWiseStatsAsdhar({ aadhar });
+      const response = await getInstituteWiseStatsAadhar({ aadhar });
 
       if (response.data.valid) {
         setSearchData(response.data);
