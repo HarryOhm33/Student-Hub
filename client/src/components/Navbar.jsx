@@ -137,7 +137,7 @@ const Navbar = () => {
                 className="h-10 w-auto object-contain"
               />
               {/* Brand Name */}
-              <span className="ml-2 bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent hidden sm:block">
+              <span className="ml-2 bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent sm:block">
                 Pratibha-Kosh
               </span>
             </Link>
