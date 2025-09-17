@@ -26,6 +26,7 @@ import ApplyApproval from "./Pages/Student/ApplyApproval";
 import Portfolio from "./Pages/Student/Portfolio";
 import Reports from "./Pages/Admin/Reports";
 import StudentSearch from "./Pages/StudentSearch";
+import NotFound from "./Pages/NotFound"; // Import the new component
 
 function App() {
   return (
@@ -64,7 +65,7 @@ function App() {
                 path="/faculty/students/:id"
                 element={<StudentDetails />}
               />
-              <Route path="/faculty/approval" element={<Approval />} />"
+              <Route path="/faculty/approval" element={<Approval />} />
             </Route>
 
             <Route element={<ProtectedRoute role="student" />}>
@@ -77,6 +78,9 @@ function App() {
             {/* Common protected routes for all roles */}
             <Route path="/profile" element={<Profile />} />
           </Route>
+
+          {/* 404 Catch-all route - MUST BE LAST */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
     </Router>
