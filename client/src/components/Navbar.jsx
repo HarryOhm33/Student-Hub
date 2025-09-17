@@ -67,6 +67,11 @@ const Navbar = () => {
       // Only show Home when loading
       return [
         { path: "/", label: "Home", icon: <FiHome className="h-5 w-5" /> },
+        {
+          path: "/student-search",
+          label: "Student Search",
+          icon: <FiGrid className="h-5 w-5" />,
+        },
       ];
     }
 
@@ -74,6 +79,11 @@ const Navbar = () => {
       // User is authenticated
       return [
         { path: "/", label: "Home", icon: <FiHome className="h-5 w-5" /> },
+        {
+          path: "/student-search",
+          label: "Student Search",
+          icon: <FiGrid className="h-5 w-5" />,
+        },
         {
           path: getRoleBasedPath(),
           label: "Dashboard",
@@ -90,6 +100,11 @@ const Navbar = () => {
     // User is not authenticated
     return [
       { path: "/", label: "Home", icon: <FiHome className="h-5 w-5" /> },
+      {
+        path: "/student-search",
+        label: "Student Search",
+        icon: <FiGrid className="h-5 w-5" />,
+      },
       {
         path: "/auth/signup",
         label: "Signup",

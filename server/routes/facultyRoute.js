@@ -6,6 +6,7 @@ const { checkFaculty } = require("../middleware/checkRole");
 const wrapAsync = require("../utils/wrapAsync");
 
 const {
+  getFacultyDashboard,
   getStudentList,
   getStudentById,
   addGrade,
@@ -15,6 +16,15 @@ const {
 } = require("../controllers/facultyController");
 
 // ================= Routes =================
+
+// GEt Dashboard Data
+
+router.get(
+  "/dashboard",
+  authenticate,
+  checkFaculty,
+  wrapAsync(getFacultyDashboard)
+);
 
 // Get all students of faculty's institute
 router.get("/students", authenticate, checkFaculty, wrapAsync(getStudentList));

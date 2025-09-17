@@ -15,7 +15,17 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
+export const getInstituteWiseStatsAsdhar = (data) =>
+  axiosInstance.post("/api/open/institute-stats", data);
+
+export const getInstituteStatsByAadhar = () =>
+  axiosInstance.get("/api/open/institute-stats");
+
 // ===================== Admin APIs =====================
+
+// Get Admin Dashboard
+export const getAdminDashboard = () =>
+  axiosInstance.get("/api/admin/dashboard");
 
 // Get institute details
 export const getInstituteDetails = () =>
@@ -44,7 +54,15 @@ export const addStudent = (data) =>
 export const getStudentList = () =>
   axiosInstance.get("/api/admin/student-list");
 
+export const uploadReport = (data) =>
+  axiosInstance.post("/api/admin/reports/upload", data);
+
+export const getMyReports = () => axiosInstance.get("/api/admin/reports/my");
+
 // ===================== Faculty APIs ===================
+
+export const getFacultyDashboard = () =>
+  axiosInstance.get("/api/faculty/dashboard");
 
 export const getStudentListFaculty = () =>
   axiosInstance.get("/api/faculty/students");

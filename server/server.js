@@ -17,6 +17,7 @@ const authRoute = require("./routes/authRoute");
 const adminRoute = require("./routes/adminRoute");
 const facultyRoute = require("./routes/facultyRoute");
 const studentRoute = require("./routes/studentRoute");
+const openRoute = require("./routes/openRoute");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -38,6 +39,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/faculty", facultyRoute);
 app.use("/api/student", studentRoute);
+app.use("/api/open", openRoute);
 
 app.all("*", (req, res, next) => {
   next(new ExpressError(404, "Not a Valid Route"));

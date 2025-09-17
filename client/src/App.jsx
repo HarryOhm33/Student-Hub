@@ -25,6 +25,7 @@ import Academics from "./Pages/Student/Academics";
 import ApplyApproval from "./Pages/Student/ApplyApproval";
 import Portfolio from "./Pages/Student/Portfolio";
 import Reports from "./Pages/Admin/Reports";
+import StudentSearch from "./Pages/StudentSearch";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<Home />} />
+          <Route path="/student-search" element={<StudentSearch />} />
 
           <Route element={<ProtectedAuth />}>
             <Route path="/auth/signup" element={<Signup />} />
