@@ -4,70 +4,26 @@ import {
   FiBarChart2,
   FiBookOpen,
   FiCheckCircle,
+  FiLogIn,
+  FiSearch,
   FiShield,
   FiTrendingUp,
   FiUser,
-  FiSearch,
-  FiLogIn,
-  FiUsers,
-  FiHome,
-  FiFileText,
 } from "react-icons/fi";
-import lock3 from "../assets/lock3.png";
+import achivo from "../assets/achivo.png";
+import Footer from "../components/Footer";
+
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { getHomeData } from "../Utils/Api";
-import { toast } from "react-toastify";
 
 const Home = () => {
   const navigate = useNavigate();
-  const [homeData, setHomeData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchHomeData();
-  }, []);
-
-  const fetchHomeData = async () => {
-    try {
-      setLoading(true);
-      const response = await getHomeData();
-      if (response.data.valid) {
-        setHomeData(response.data.data);
-      }
-    } catch (error) {
-      console.error("Error fetching home data:", error);
-      toast.error("Error loading statistics");
-      // Set fallback data
-      setHomeData({
-        studentCount: 0,
-        instituteCount: 0,
-        reportCount: 0,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Calculate percentages based on realistic targets
-  const calculatePercentage = (current, target = 100) => {
-    return Math.min(Math.round((current / target) * 100), 100);
-  };
-
-  const stats = homeData
-    ? {
-        studentsPercent: calculatePercentage(homeData.studentCount, 500),
-        institutesPercent: calculatePercentage(homeData.instituteCount, 50),
-        reportsPercent: calculatePercentage(homeData.reportCount, 1000),
-      }
-    : null;
 
   return (
     <div className="bg-[#F9FAFB]">
       {/* Hero Section */}
       <section
-        className="relative min-h-screen flex items-center justify-center px-6 bg-cover bg-center"
-        style={{ backgroundImage: `url(${lock3})` }}
+        className=" relative min-h-screen flex items-center justify-center px-6  bg-cover bg-center"
+        style={{ backgroundImage: `url(${achivo})` }}
       >
         <div className="max-w-5xl mx-auto text-center">
           <motion.div
@@ -76,10 +32,10 @@ const Home = () => {
             transition={{ duration: 0.6 }}
             className="mb-8 sm:mb-8 mt-8 sm:-mt-16"
           >
-            <h1 className="text-4xl md:text-6xl font-extrabold text-[#1F2937] mb-6 leading-tight">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-[#000000] mb-6 leading-tight">
               One Platform for All Student Achievements
             </h1>
-            <p className="text-lg md:text-xl text-[#4B5563] max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-[#000000] max-w-2xl mx-auto">
               Empowering Students, Faculty, and Institutions with Analytics,
               Career Guidance, and Accreditation-Ready Reports.
             </p>
@@ -90,13 +46,13 @@ const Home = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
+            className="flex flex-col sm:flex-row gap-4 justify-center"
           >
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate("/auth/signup")}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#10B981] hover:bg-[#059669] text-white rounded-lg font-semibold shadow-md"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#28a745]  text-white rounded-lg font-semibold shadow-md"
             >
               <FiUser className="h-5 w-5" />
               Get Started
@@ -106,7 +62,8 @@ const Home = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate("/auth/login")}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-[#10B981] text-[#10B981] rounded-lg font-semibold hover:bg-[#10B981] hover:text-white transition-all"
+              // className="flex items-center justify-center gap-2 px-6 py-3 bg-[#FFFFFF] hover:bg-[#059669] text-white rounded-lg font-semibold shadow-md"
+              className="flex items-center justify-center gap-2 px-6 py-2 bg-white border-2 border-[#10B981] text-[#10B981] rounded-lg font-semibold   transition-all"
             >
               <FiLogIn className="h-5 w-5" />
               Login
@@ -116,317 +73,304 @@ const Home = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate("/student-search")}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-lg font-semibold shadow-md"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#0000FF]  text-white rounded-lg font-semibold shadow-md"
             >
               <FiSearch className="h-5 w-5" />
               Student Search
             </motion.button>
           </motion.div>
-
-          {/* Quick Stats with Static Data */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-16 text-center">
+          {/* Quick Stats with Progress Rings */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 mt-16 text-center">
+            {/* Example Progress Ring Component */}
             {[
               {
-                icon: <FiUsers className="h-8 w-8 text-white" />,
-                value: homeData
-                  ? homeData.studentCount.toLocaleString()
-                  : "2,500+",
+                percent: 88.5,
+                color: "#862121ff",
                 label: "Students Empowered",
-                color: "bg-[#10B981]",
-                loading: loading,
-              },
-              {
-                icon: <FiHome className="h-8 w-8 text-white" />,
-                value: homeData
-                  ? homeData.instituteCount.toLocaleString()
-                  : "50+",
-                label: "Institutions",
-                color: "bg-[#3B82F6]",
-                loading: loading,
-              },
-              {
-                icon: <FiFileText className="h-8 w-8 text-white" />,
-                value: homeData
-                  ? homeData.reportCount.toLocaleString()
-                  : "1,000+",
-                label: "Reports Generated",
-                color: "bg-[#8B5CF6]",
-                loading: loading,
-              },
-            ].map((stat, idx) => (
-              <motion.div
-                key={idx}
-                className="flex flex-col items-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 + idx * 0.1, duration: 0.5 }}
-              >
-                <div
-                  className={`w-20 h-20 ${stat.color} rounded-full flex items-center justify-center shadow-lg mb-4`}
-                >
-                  {stat.icon}
+              }, // red
+              { percent: 73.1, color: "#0a063cff", label: "Institutions" }, // yellow
+              { percent: 61.5, color: "#0c4b12ff", label: "Reports Generated" }, // green
+            ].map((item, idx) => {
+              const radius = 54;
+              const circumference = 2 * Math.PI * radius;
+              const offset =
+                circumference - (item.percent / 100) * circumference;
+
+              return (
+                <div key={idx} className="flex flex-col items-center">
+                  <svg
+                    width="140"
+                    height="140"
+                    viewBox="0 0 120 120"
+                    className="mb-3"
+                  >
+                    {/* Background Ring */}
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r={radius}
+                      stroke="#E5E7EB"
+                      strokeWidth="10"
+                      fill="none"
+                    />
+                    {/* Progress Ring */}
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r={radius}
+                      stroke={item.color}
+                      strokeWidth="10"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeDasharray={circumference}
+                      strokeDashoffset={offset}
+                      transform="rotate(-90 60 60)"
+                    />
+                    {/* Percentage Text */}
+                    <text
+                      x="50%"
+                      y="50%"
+                      dominantBaseline="middle"
+                      textAnchor="middle"
+                      className="font-bold"
+                      fontSize="24"
+                      fill="#1F2937"
+                    >
+                      {item.percent}%
+                    </text>
+                  </svg>
+                  <p className="text-[#4B5563] text-sm font-medium">
+                    {item.label}
+                  </p>
                 </div>
-
-                {stat.loading ? (
-                  <div className="h-8 w-20 bg-gray-200 rounded animate-pulse mb-2"></div>
-                ) : (
-                  <h3 className="text-3xl font-bold text-[#1F2937] mb-2">
-                    {stat.value}
-                  </h3>
-                )}
-
-                <p className="text-[#4B5563] text-sm font-medium">
-                  {stat.label}
-                </p>
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
-
-          {/* Loading State */}
-          {loading && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 mt-16 text-center">
-              {[1, 2, 3].map((item) => (
-                <div key={item} className="flex flex-col items-center">
-                  <div className="w-32 h-32 rounded-full bg-gray-200 animate-pulse mb-3"></div>
-                  <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </section>
 
       {/* Key Features Section */}
       <section className="py-12">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <motion.h2
-            className="text-3xl font-bold text-[#1F2937] mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
+          <h2 className="text-3xl font-bold text-[#1F2937] mb-12">
             Key Features
-          </motion.h2>
+          </h2>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {[
-              {
-                icon: <FiUser className="h-8 w-8 text-white" />,
-                title: "Student Dashboard",
-                description:
-                  "Track grades, achievements, certificates, and career insights in real time.",
-              },
-              {
-                icon: <FiBookOpen className="h-8 w-8 text-white" />,
-                title: "Faculty Approvals",
-                description:
-                  "Easily validate student submissions, attendance, and performance data.",
-              },
-              {
-                icon: <FiShield className="h-8 w-8 text-white" />,
-                title: "Admin Reports",
-                description:
-                  "Generate NAAC/NIRF-ready reports and manage institute-level insights.",
-              },
-              {
-                icon: <FiTrendingUp className="h-8 w-8 text-white" />,
-                title: "Portfolio Auto-Generation",
-                description:
-                  "Automatically build a verified professional portfolio from approved data.",
-              },
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                className="relative bg-white shadow-lg rounded-xl pt-12 pb-6 px-4 border border-[#10B981] hover:shadow-xl hover:border-2 hover:border-[#10B981] transition duration-300"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                viewport={{ once: true }}
-              >
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#10B981] w-16 h-16 rounded-full flex items-center justify-center shadow-md">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-semibold text-[#1F2937] mb-2 mt-4">
-                  {feature.title}
-                </h3>
-                <p className="text-[#4B5563]">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+            {/* Card 1 */}
+            <div className="relative bg-white shadow-lg rounded-xl pt-12 pb-6 px-4 border border-[#10B981]   hover:shadow-xl hover:border-2 hover:border-[#10B981] transition duration-300">
+              {/* Circle for Icon */}
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#10B981] w-16 h-16 rounded-full flex items-center justify-center shadow-md">
+                <FiUser className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-[#1F2937] mb-2 mt-4">
+                Student Dashboard
+              </h3>
+              <p className="text-[#4B5563]">
+                Track grades, achievements, certificates, and career insights in
+                real time.
+              </p>
+            </div>
 
-      {/* How It Works Section */}
-      <section className="py-12 bg-[#ECFDF5]">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <motion.h2
-            className="text-3xl font-bold text-[#1F2937] mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            How It Works
-          </motion.h2>
-          <div className="grid gap-8 md:grid-cols-3">
-            {[
-              {
-                icon: (
-                  <FiCheckCircle className="h-12 w-12 text-[#10B981] mx-auto mb-4" />
-                ),
-                title: "Step 1: Student Uploads",
-                description:
-                  "Students upload certificates, achievements, and activity records.",
-              },
-              {
-                icon: (
-                  <FiBookOpen className="h-12 w-12 text-[#10B981] mx-auto mb-4" />
-                ),
-                title: "Step 2: Faculty Validates",
-                description:
-                  "Faculty review and validate uploaded data for accuracy.",
-              },
-              {
-                icon: (
-                  <FiBarChart2 className="h-12 w-12 text-[#10B981] mx-auto mb-4" />
-                ),
-                title: "Step 3: Admin Generates Reports",
-                description:
-                  "Admins generate data-driven reports and dashboards instantly.",
-              },
-            ].map((step, index) => (
-              <motion.div
-                key={index}
-                className="p-6"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                viewport={{ once: true }}
-              >
-                {step.icon}
-                <h3 className="text-xl font-semibold text-[#1F2937]">
-                  {step.title}
-                </h3>
-                <p className="text-[#4B5563]">{step.description}</p>
-              </motion.div>
-            ))}
+            {/* Card 2 */}
+            <div className="relative bg-white shadow-lg rounded-xl pt-12 pb-6 px-4 border border-[#10B981]   hover:shadow-xl hover:border-2 hover:border-[#10B981] transition duration-300">
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#10B981] w-16 h-16 rounded-full flex items-center justify-center shadow-md">
+                <FiBookOpen className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-[#1F2937] mb-2 mt-4">
+                Faculty Approvals
+              </h3>
+              <p className="text-[#4B5563]">
+                Easily validate student submissions, attendance, and performance
+                data.
+              </p>
+            </div>
+
+            {/* Card 3 */}
+            <div className="relative bg-white shadow-lg rounded-xl pt-12 pb-6 px-4 border border-[#10B981]   hover:shadow-xl hover:border-2 hover:border-[#10B981] transition duration-300">
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#10B981] w-16 h-16 rounded-full flex items-center justify-center shadow-md">
+                <FiShield className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-[#1F2937] mb-2 mt-4">
+                Admin Reports
+              </h3>
+              <p className="text-[#4B5563]">
+                Generate NAAC/NIRF-ready reports and manage institute-level
+                insights.
+              </p>
+            </div>
+
+            {/* Card 4 */}
+            <div className="relative bg-white shadow-lg rounded-xl pt-12 pb-6 px-4 border border-[#10B981]   hover:shadow-xl hover:border-2 hover:border-[#10B981] transition duration-300">
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#10B981] w-16 h-16 rounded-full flex items-center justify-center shadow-md">
+                <FiTrendingUp className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-[#1F2937] mb-2 mt-4">
+                Portfolio Auto-Generation
+              </h3>
+              <p className="text-[#4B5563]">
+                Automatically build a verified professional portfolio for each
+                student from approved data.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* AI + Portfolio + Leaderboard Section */}
-      <section className="py-12">
+      <section className="py-4 bg-gradient-to-r from-[#10B981] via-[#059669] to-[#047857] text-white">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <motion.h2
-            className="text-3xl font-bold text-[#1F2937] mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
+          {/* Heading */}
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
             AI Career Tools, Portfolio & Leaderboard
-          </motion.h2>
-          <motion.p
-            className="text-lg text-[#4B5563] max-w-3xl mx-auto mb-10"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            viewport={{ once: true }}
-          >
+          </h2>
+          <p className="text-lg max-w-3xl mx-auto mb-12 text-gray-100">
             Our AI analyzes achievements to recommend career tracks,
             automatically builds professional portfolios, and generates a
             gamified leaderboard so students stay motivated through credits and
             rankings.
-          </motion.p>
+          </p>
 
+          {/* Features Grid */}
           <div className="grid gap-8 md:grid-cols-3">
-            {[
-              {
-                icon: (
-                  <FiTrendingUp className="h-10 w-10 text-[#10B981] mx-auto mb-4" />
-                ),
-                title: "Career Insights",
-                description:
-                  "Personalized AI-powered recommendations on future career paths.",
-              },
-              {
-                icon: (
-                  <FiCheckCircle className="h-10 w-10 text-[#10B981] mx-auto mb-4" />
-                ),
-                title: "Portfolio Auto-Generation",
-                description:
-                  "Instantly create a professional portfolio from validated achievements.",
-              },
-              {
-                icon: (
-                  <FiBarChart2 className="h-10 w-10 text-[#10B981] mx-auto mb-4" />
-                ),
-                title: "Leaderboard System",
-                description:
-                  "Track achievements and compete with peers using a credit-based ranking system.",
-              },
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                className="p-6 bg-white shadow-lg rounded-xl"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                viewport={{ once: true }}
-              >
-                {feature.icon}
-                <h3 className="text-xl font-semibold text-[#1F2937] mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-[#4B5563]">{feature.description}</p>
-              </motion.div>
-            ))}
+            {/* Career Insights */}
+            <div className="p-6 bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg hover:scale-105 transition-transform">
+              <FiTrendingUp className="h-12 w-12 text-white mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Career Insights</h3>
+              <p className="text-gray-200 text-sm">
+                Personalized AI-powered recommendations on future career paths.
+              </p>
+            </div>
+
+            {/* Portfolio Auto-Generation */}
+            <div className="p-6 bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg hover:scale-105 transition-transform">
+              <FiCheckCircle className="h-12 w-12 text-white mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">
+                Portfolio Auto-Generation
+              </h3>
+              <p className="text-gray-200 text-sm">
+                Instantly create a professional portfolio from validated
+                achievements, ready to share with employers and recruiters.
+              </p>
+            </div>
+
+            {/* Leaderboard System */}
+            <div className="p-6 bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg hover:scale-105 transition-transform">
+              <FiBarChart2 className="h-12 w-12 text-white mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Leaderboard System</h3>
+              <p className="text-gray-200 text-sm">
+                Track achievements and compete with peers using a credit-based
+                ranking system.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* How It Works Section */}
+      <section className="py-12">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold text-[#1F2937] mb-12">
+            How It Works
+          </h2>
+          <div className="grid gap-8 md:grid-cols-3">
+            <div className="p-6">
+              <FiCheckCircle className="h-12 w-12 text-[#28a745] mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-[#1F2937]">
+                Step 1: Student Uploads
+              </h3>
+              <p className="text-[#4B5563]">
+                Students upload certificates, achievements, and activity
+                records.
+              </p>
+            </div>
+            <div className="p-6">
+              <FiBookOpen className="h-12 w-12 text-[#28a745] mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-[#1F2937]">
+                Step 2: Faculty Validates
+              </h3>
+              <p className="text-[#4B5563]">
+                Faculty review and validate uploaded data for accuracy.
+              </p>
+            </div>
+            <div className="p-6">
+              <FiBarChart2 className="h-12 w-12 text-[#28a745] mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-[#1F2937]">
+                Step 3: Admin Generates Reports
+              </h3>
+              <p className="text-[#4B5563]">
+                Admins generate data-driven reports and dashboards instantly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Impact Section */}
+      <section className="py-12 bg-[#ECFDF5]">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold text-[#1F2937] mb-12">
+            For Institutions
+          </h2>
+          <p className="text-lg text-[#4B5563] max-w-3xl mx-auto mb-10">
+            Simplify accreditation processes and unlock deep insights into
+            student performance.
+          </p>
+          <div className="grid gap-8 md:grid-cols-3">
+            <div className="p-6 bg-white shadow-lg rounded-xl">
+              <h3 className="text-xl font-semibold text-[#1F2937] mb-2">
+                Accreditation-Ready
+              </h3>
+              <p className="text-[#4B5563]">
+                Generate instant NAAC/NIRF-ready reports with verified student
+                data.
+              </p>
+            </div>
+            <div className="p-6 bg-white shadow-lg rounded-xl">
+              <h3 className="text-xl font-semibold text-[#1F2937] mb-2">
+                Data-Driven Insights
+              </h3>
+              <p className="text-[#4B5563]">
+                Make informed decisions based on analytics and trends across
+                departments.
+              </p>
+            </div>
+            <div className="p-6 bg-white shadow-lg rounded-xl">
+              <h3 className="text-xl font-semibold text-[#1F2937] mb-2">
+                Reduced Paperwork
+              </h3>
+              <p className="text-[#4B5563]">
+                Automate certificate validation and reporting, saving time for
+                faculty & staff.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
       {/* Final CTA */}
-      <section className="py-20 bg-[#10B981] text-white text-center">
-        <motion.h2
-          className="text-3xl md:text-4xl font-bold mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
+      <section className="py-20 bg-white text-center">
+        <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#1F2937]">
           Join the Future of Student Achievement Management
-        </motion.h2>
-        <motion.p
-          className="text-lg max-w-2xl mx-auto mb-8"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-          viewport={{ once: true }}
-        >
+        </h2>
+        <p className="text-lg max-w-2xl mx-auto mb-8 text-[#4B5563]">
           Start today and empower your institution with smarter, faster, and
           more impactful solutions.
-        </motion.p>
-        <motion.div
-          className="flex flex-col sm:flex-row justify-center gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          viewport={{ once: true }}
-        >
+        </p>
+        <div className="flex flex-col sm:flex-row justify-center gap-4">
           <button
             onClick={() => navigate("/auth/signup")}
-            className="px-6 py-3 bg-white text-[#10B981] rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+            className="px-6 py-3 bg-[#10B981] text-white rounded-lg font-semibold hover:bg-[#059669]"
           >
             Get Started
           </button>
           <button
-            onClick={() => navigate("/student-search")}
-            className="px-6 py-3 border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-[#10B981] transition-colors"
+            onClick={() => navigate("/contact")}
+            className="px-6 py-3 border-2 border-[#10B981] text-[#10B981] rounded-lg font-semibold hover:bg-[#10B981] hover:text-white"
           >
-            Student Search
+            Contact Us
           </button>
-        </motion.div>
+        </div>
       </section>
+      <Footer />
     </div>
   );
 };
