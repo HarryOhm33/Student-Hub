@@ -37,6 +37,7 @@ const ApplyApproval = () => {
     appliedTo: "",
     attachment: null,
   });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     fetchFaculties();
@@ -72,6 +73,7 @@ const ApplyApproval = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true); // 🔹 start loading
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("title", formData.title);
@@ -103,6 +105,8 @@ const ApplyApproval = () => {
     } catch (error) {
       console.error("Error applying for activity:", error);
       toast.error("Error submitting application!");
+    } finally {
+      setSubmitting(false); // 🔹 stop loading
     }
   };
 
@@ -479,15 +483,29 @@ const ApplyApproval = () => {
                     Supported formats: JPG, PNG, PDF, DOC (Max 5MB)
                   </p>
                 </div>
-
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: submitting ? 1 : 1.02 }}
+                  whileTap={{ scale: submitting ? 1 : 0.98 }}
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 bg-[#10B981] hover:bg-[#059669] text-white py-2 rounded-lg font-semibold shadow-md"
+                  disabled={submitting}
+                  className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg font-semibold shadow-md 
+    ${
+      submitting
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-[#10B981] hover:bg-[#059669] text-white"
+    }`}
                 >
-                  <FiSend className="h-4 w-4" />
-                  Submit Application
+                  {submitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Adding...
+                    </>
+                  ) : (
+                    <>
+                      <FiSend className="h-4 w-4" />
+                      Submit Application
+                    </>
+                  )}
                 </motion.button>
               </form>
             </motion.div>

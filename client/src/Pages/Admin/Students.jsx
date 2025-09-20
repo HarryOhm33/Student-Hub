@@ -31,6 +31,7 @@ const Students = () => {
     courseName: "",
     year: "",
   });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     fetchStudents();
@@ -54,6 +55,7 @@ const Students = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true); // 🔹 start loading
     try {
       const response = await addStudent(formData);
 
@@ -77,6 +79,8 @@ const Students = () => {
     } catch (error) {
       console.error("Error adding student:", error);
       toast.error("Error adding student!");
+    } finally {
+      setSubmitting(false); // 🔹 stop loading
     }
   };
 
@@ -322,12 +326,25 @@ const Students = () => {
                 </div>
 
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: submitting ? 1 : 1.02 }}
+                  whileTap={{ scale: submitting ? 1 : 0.98 }}
                   type="submit"
-                  className="w-full bg-[#10B981] hover:bg-[#059669] text-white py-2 rounded-lg font-semibold shadow-md"
+                  disabled={submitting}
+                  className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg font-semibold shadow-md 
+    ${
+      submitting
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-[#10B981] hover:bg-[#059669] text-white"
+    }`}
                 >
-                  Add Student
+                  {submitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Adding...
+                    </>
+                  ) : (
+                    "Add Student"
+                  )}
                 </motion.button>
               </form>
             </motion.div>
