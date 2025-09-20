@@ -19,6 +19,7 @@ import {
   FiPieChart,
   FiBarChart2,
   FiHash,
+  FiStar,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -115,6 +116,33 @@ const StudentDashboard = () => {
     } finally {
       setGeneratingPdf(false);
     }
+  };
+
+  // Format AI insights text
+  const formatAIInsights = (text) => {
+    if (!text) return null;
+
+    return text.split("\n").map((line, index) => {
+      // Check for bold text pattern **text**
+      const boldRegex = /\*\*(.*?)\*\*/g;
+      const parts = line.split(boldRegex);
+
+      return (
+        <p key={index} className="mb-2">
+          {parts.map((part, i) => {
+            // Every odd index is the text inside **
+            if (i % 2 === 1) {
+              return (
+                <strong key={i} className="font-semibold text-[#1F2937]">
+                  {part}
+                </strong>
+              );
+            }
+            return part;
+          })}
+        </p>
+      );
+    });
   };
 
   // Chart data configurations
@@ -461,6 +489,27 @@ const StudentDashboard = () => {
           </div>
           <div className="h-64">
             <Pie data={activityTypesData} options={chartOptions} />
+          </div>
+        </div>
+      </div>
+
+      {/* AI Insights Section */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="flex items-center mb-4">
+          <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 mr-3">
+            <FiStar className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-[#1F2937]">AI Insights</h2>
+            <p className="text-[#4B5563]">
+              Personalized recommendations based on your performance
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-indigo-50 rounded-lg p-4">
+          <div className="text-[#4B5563]">
+            {formatAIInsights(dashboardData.ai_insights)}
           </div>
         </div>
       </div>

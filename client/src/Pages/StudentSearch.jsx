@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { getInstituteWiseStatsAadhar } from "../Utils/Api";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FiSearch,
   FiUser,
@@ -10,8 +10,6 @@ import {
   FiCheckCircle,
   FiClock,
   FiXCircle,
-  FiTrendingUp,
-  FiUsers,
   FiHome,
   FiHash,
   FiChevronDown,
@@ -25,8 +23,7 @@ const StudentSearch = () => {
   const [aadhar, setAadhar] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchData, setSearchData] = useState(null);
-  const [selectedInstitute, setSelectedInstitute] = useState(null);
-  const [expandedInstitutes, setExpandedInstitutes] = useState({});
+  const [expandedInstitute, setExpandedInstitute] = useState(null);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -46,8 +43,7 @@ const StudentSearch = () => {
 
       if (response.data.valid) {
         setSearchData(response.data);
-        setSelectedInstitute(null);
-        setExpandedInstitutes({});
+        setExpandedInstitute(null);
         toast.success("Data fetched successfully!");
       } else {
         toast.error("No data found for this Aadhar number");
@@ -63,14 +59,32 @@ const StudentSearch = () => {
   };
 
   const toggleInstitute = (instituteId) => {
-    setExpandedInstitutes((prev) => ({
-      ...prev,
-      [instituteId]: !prev[instituteId],
-    }));
+    if (expandedInstitute === instituteId) {
+      setExpandedInstitute(null);
+    } else {
+      setExpandedInstitute(instituteId);
+    }
   };
 
-  const formatNumber = (num) => {
-    return num?.toFixed(2) || "0.00";
+  // Function to categorize activities by status
+  const categorizeActivities = (activities) => {
+    const categorized = {
+      validated: [],
+      unvalidated: [],
+      unlooked: [],
+    };
+
+    activities.forEach((activity) => {
+      if (activity.status === "Validated") {
+        categorized.validated.push(activity);
+      } else if (activity.status === "Un-validated") {
+        categorized.unvalidated.push(activity);
+      } else if (activity.status === "Un-Looked") {
+        categorized.unlooked.push(activity);
+      }
+    });
+
+    return categorized;
   };
 
   return (
@@ -152,11 +166,11 @@ const StudentSearch = () => {
               </div>
               <div className="p-3 bg-green-50 rounded-lg">
                 <p className="text-sm text-green-800 font-medium">
-                  Total Matched Students
+                  Total Students
                 </p>
                 <p className="text-2xl font-bold text-green-600">
                   {searchData.institutes.reduce(
-                    (total, inst) => total + inst.matchedStudents.length,
+                    (total, inst) => total + inst.student.length,
                     0
                   )}
                 </p>
@@ -171,173 +185,330 @@ const StudentSearch = () => {
               Associated Institutes
             </h3>
 
-            {searchData.institutes.map((instituteData, index) => (
-              <motion.div
-                key={instituteData.institute._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-lg shadow-md overflow-hidden"
-              >
-                {/* Institute Header */}
-                <div
-                  className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => toggleInstitute(instituteData.institute._id)}
+            {searchData.institutes.map((instituteData, index) => {
+              const isExpanded =
+                expandedInstitute === instituteData.institute._id;
+
+              return (
+                <motion.div
+                  key={instituteData.institute._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white rounded-lg shadow-md overflow-hidden"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
-                        <FiHome className="h-5 w-5" />
+                  {/* Institute Header */}
+                  <div
+                    className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                    onClick={() => toggleInstitute(instituteData.institute._id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                          <FiHome className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-[#1F2937]">
+                            {instituteData.institute.name}
+                          </h4>
+                          <p className="text-sm text-[#6B7280]">
+                            Code: {instituteData.institute.code}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-semibold text-[#1F2937]">
-                          {instituteData.institute.name}
-                        </h4>
-                        <p className="text-sm text-[#6B7280]">
-                          Code: {instituteData.institute.code}
-                        </p>
+                      <div className="flex items-center gap-4">
+                        <span className="text-sm text-gray-600">
+                          {instituteData.student.length} student(s)
+                        </span>
+                        {isExpanded ? (
+                          <FiChevronUp className="h-5 w-5 text-gray-500" />
+                        ) : (
+                          <FiChevronDown className="h-5 w-5 text-gray-500" />
+                        )}
                       </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="text-sm text-gray-600">
-                        {instituteData.matchedStudents.length} student(s)
-                      </span>
-                      {expandedInstitutes[instituteData.institute._id] ? (
-                        <FiChevronUp className="h-5 w-5 text-gray-500" />
-                      ) : (
-                        <FiChevronDown className="h-5 w-5 text-gray-500" />
-                      )}
                     </div>
                   </div>
-                </div>
 
-                {/* Expanded Content */}
-                {expandedInstitutes[instituteData.institute._id] && (
-                  <div className="border-t border-gray-200 p-4">
-                    {/* Statistics Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                      <div className="bg-blue-50 p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <FiUsers className="h-4 w-4 text-blue-600" />
-                          <span className="text-sm text-blue-800">
-                            Students
-                          </span>
-                        </div>
-                        <p className="text-2xl font-bold text-blue-600">
-                          {instituteData.students}
-                        </p>
-                      </div>
+                  {/* Expanded Content - Student Details */}
+                  <AnimatePresence>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="border-t border-gray-200 overflow-hidden"
+                      >
+                        {instituteData.student.map((student) => {
+                          const categorizedActivities = categorizeActivities(
+                            student.activities || []
+                          );
 
-                      <div className="bg-purple-50 p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <FiUser className="h-4 w-4 text-purple-600" />
-                          <span className="text-sm text-purple-800">
-                            Faculties
-                          </span>
-                        </div>
-                        <p className="text-2xl font-bold text-purple-600">
-                          {instituteData.faculties}
-                        </p>
-                      </div>
-
-                      <div className="bg-green-50 p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <FiTrendingUp className="h-4 w-4 text-green-600" />
-                          <span className="text-sm text-green-800">
-                            Avg Attendance
-                          </span>
-                        </div>
-                        <p className="text-2xl font-bold text-green-600">
-                          {instituteData.academics.avgAttendance}%
-                        </p>
-                      </div>
-
-                      <div className="bg-indigo-50 p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <FiAward className="h-4 w-4 text-indigo-600" />
-                          <span className="text-sm text-indigo-800">
-                            Avg CGPA
-                          </span>
-                        </div>
-                        <p className="text-2xl font-bold text-indigo-600">
-                          {instituteData.academics.avgCGPA}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Activity Stats */}
-                    <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                      <h5 className="font-semibold text-[#1F2937] mb-3 flex items-center gap-2">
-                        <FiActivity className="h-4 w-4 text-gray-600" />
-                        Activity Statistics
-                      </h5>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="text-center">
-                          <p className="text-sm text-gray-600">Total</p>
-                          <p className="text-xl font-bold text-gray-800">
-                            {instituteData.activities.total}
-                          </p>
-                        </div>
-                        <div className="text-center">
-                          <FiCheckCircle className="h-5 w-5 text-green-600 mx-auto mb-1" />
-                          <p className="text-sm text-green-600">Approved</p>
-                          <p className="text-lg font-bold text-green-700">
-                            {instituteData.activities.approved}
-                          </p>
-                        </div>
-                        <div className="text-center">
-                          <FiClock className="h-5 w-5 text-yellow-600 mx-auto mb-1" />
-                          <p className="text-sm text-yellow-600">Pending</p>
-                          <p className="text-lg font-bold text-yellow-700">
-                            {instituteData.activities.pending}
-                          </p>
-                        </div>
-                        <div className="text-center">
-                          <FiXCircle className="h-5 w-5 text-red-600 mx-auto mb-1" />
-                          <p className="text-sm text-red-600">Rejected</p>
-                          <p className="text-lg font-bold text-red-700">
-                            {instituteData.activities.rejected}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Matched Students */}
-                    <div>
-                      <h5 className="font-semibold text-[#1F2937] mb-3 flex items-center gap-2">
-                        <FiUser className="h-4 w-4 text-blue-600" />
-                        Matched Students
-                      </h5>
-                      <div className="space-y-2">
-                        {instituteData.matchedStudents.map((student) => (
-                          <div
-                            key={student._id}
-                            className="flex items-center justify-between p-3 bg-blue-50 rounded-lg"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                                <FiUser className="h-4 w-4" />
+                          return (
+                            <div key={student._id} className="p-4">
+                              {/* Student Information */}
+                              <div className="bg-blue-50 rounded-lg p-4 mb-6">
+                                <h5 className="font-semibold text-[#1F2937] mb-3 flex items-center gap-2">
+                                  <FiUser className="h-5 w-5 text-blue-600" />
+                                  Student Details
+                                </h5>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div>
+                                    <p className="text-sm text-gray-600">
+                                      Name
+                                    </p>
+                                    <p className="font-medium text-[#1F2937]">
+                                      {student.name}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm text-gray-600">
+                                      Registration Number
+                                    </p>
+                                    <p className="font-medium text-[#1F2937]">
+                                      {student.regNumber}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm text-gray-600">
+                                      CGPA
+                                    </p>
+                                    <p className="font-medium text-[#1F2937]">
+                                      {student.academics?.cgpa || "N/A"}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm text-gray-600">
+                                      Attendance
+                                    </p>
+                                    <p className="font-medium text-[#1F2937]">
+                                      {student.academics?.attendance || "N/A"}%
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
-                              <div>
-                                <p className="font-medium text-[#1F2937]">
-                                  {student.name}
-                                </p>
-                                <p className="text-sm text-[#6B7280]">
-                                  Reg: {student.regNumber}
-                                </p>
+
+                              {/* Activity Statistics */}
+                              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                                <h5 className="font-semibold text-[#1F2937] mb-3 flex items-center gap-2">
+                                  <FiActivity className="h-5 w-5 text-gray-600" />
+                                  Activity Statistics
+                                </h5>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                  <div className="text-center p-3 bg-gray-100 rounded-lg">
+                                    <p className="text-sm text-gray-600">
+                                      Total
+                                    </p>
+                                    <p className="text-xl font-bold text-gray-800">
+                                      {student.activities?.length || 0}
+                                    </p>
+                                  </div>
+                                  <div className="text-center p-3 bg-green-100 rounded-lg">
+                                    <FiCheckCircle className="h-5 w-5 text-green-600 mx-auto mb-1" />
+                                    <p className="text-sm text-green-600">
+                                      Validated
+                                    </p>
+                                    <p className="text-lg font-bold text-green-700">
+                                      {categorizedActivities.validated.length}
+                                    </p>
+                                  </div>
+                                  <div className="text-center p-3 bg-red-100 rounded-lg">
+                                    <FiXCircle className="h-5 w-5 text-red-600 mx-auto mb-1" />
+                                    <p className="text-sm text-red-600">
+                                      Un-Validated
+                                    </p>
+                                    <p className="text-lg font-bold text-red-700">
+                                      {categorizedActivities.unvalidated.length}
+                                    </p>
+                                  </div>
+                                  <div className="text-center p-3 bg-yellow-100 rounded-lg">
+                                    <FiClock className="h-5 w-5 text-yellow-600 mx-auto mb-1" />
+                                    <p className="text-sm text-yellow-600">
+                                      Un-Looked
+                                    </p>
+                                    <p className="text-lg font-bold text-yellow-700">
+                                      {categorizedActivities.unlooked.length}
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
+
+                              {/* Activities by Status */}
+                              {student.activities &&
+                                student.activities.length > 0 && (
+                                  <div>
+                                    <h5 className="font-semibold text-[#1F2937] mb-3 flex items-center gap-2">
+                                      <FiActivity className="h-5 w-5 text-blue-600" />
+                                      Activities
+                                    </h5>
+
+                                    {/* Validated Activities */}
+                                    {categorizedActivities.validated.length >
+                                      0 && (
+                                      <div className="mb-6">
+                                        <h6 className="text-sm font-medium text-green-700 mb-2 flex items-center gap-1">
+                                          <FiCheckCircle className="h-4 w-4" />
+                                          Validated Activities (
+                                          {
+                                            categorizedActivities.validated
+                                              .length
+                                          }
+                                          )
+                                        </h6>
+                                        <div className="space-y-3">
+                                          {categorizedActivities.validated.map(
+                                            (activity) => (
+                                              <motion.div
+                                                key={activity._id}
+                                                className="p-4 bg-green-50 rounded-lg border border-green-100"
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.1 }}
+                                              >
+                                                <p className="font-medium text-green-800">
+                                                  {activity.title}
+                                                </p>
+                                                <p className="text-sm text-green-700 mt-1">
+                                                  {activity.description}
+                                                </p>
+                                                <div className="flex flex-wrap gap-2 mt-3">
+                                                  <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                                                    {activity.activityType}
+                                                  </span>
+                                                  <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                                                    {activity.credentialId}
+                                                  </span>
+                                                  <span className="text-xs text-green-600">
+                                                    {new Date(
+                                                      activity.createdAt
+                                                    ).toLocaleDateString()}
+                                                  </span>
+                                                </div>
+                                                {activity.remarks && (
+                                                  <p className="text-xs text-green-600 mt-2">
+                                                    Remarks: {activity.remarks}
+                                                  </p>
+                                                )}
+                                              </motion.div>
+                                            )
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Un-Validated Activities */}
+                                    {categorizedActivities.unvalidated.length >
+                                      0 && (
+                                      <div className="mb-6">
+                                        <h6 className="text-sm font-medium text-red-700 mb-2 flex items-center gap-1">
+                                          <FiXCircle className="h-4 w-4" />
+                                          Un-Validated Activities (
+                                          {
+                                            categorizedActivities.unvalidated
+                                              .length
+                                          }
+                                          )
+                                        </h6>
+                                        <div className="space-y-3">
+                                          {categorizedActivities.unvalidated.map(
+                                            (activity) => (
+                                              <motion.div
+                                                key={activity._id}
+                                                className="p-4 bg-red-50 rounded-lg border border-red-100"
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.2 }}
+                                              >
+                                                <p className="font-medium text-red-800">
+                                                  {activity.title}
+                                                </p>
+                                                <p className="text-sm text-red-700 mt-1">
+                                                  {activity.description}
+                                                </p>
+                                                <div className="flex flex-wrap gap-2 mt-3">
+                                                  <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                                                    {activity.activityType}
+                                                  </span>
+                                                  <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                                                    {activity.credentialId}
+                                                  </span>
+                                                  <span className="text-xs text-red-600">
+                                                    {new Date(
+                                                      activity.createdAt
+                                                    ).toLocaleDateString()}
+                                                  </span>
+                                                </div>
+                                                {activity.remarks && (
+                                                  <p className="text-xs text-red-600 mt-2">
+                                                    Remarks: {activity.remarks}
+                                                  </p>
+                                                )}
+                                              </motion.div>
+                                            )
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Un-Looked Activities */}
+                                    {categorizedActivities.unlooked.length >
+                                      0 && (
+                                      <div className="mb-6">
+                                        <h6 className="text-sm font-medium text-yellow-700 mb-2 flex items-center gap-1">
+                                          <FiClock className="h-4 w-4" />
+                                          Un-Looked Activities (
+                                          {
+                                            categorizedActivities.unlooked
+                                              .length
+                                          }
+                                          )
+                                        </h6>
+                                        <div className="space-y-3">
+                                          {categorizedActivities.unlooked.map(
+                                            (activity) => (
+                                              <motion.div
+                                                key={activity._id}
+                                                className="p-4 bg-yellow-50 rounded-lg border border-yellow-100"
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.3 }}
+                                              >
+                                                <p className="font-medium text-yellow-800">
+                                                  {activity.title}
+                                                </p>
+                                                <p className="text-sm text-yellow-700 mt-1">
+                                                  {activity.description}
+                                                </p>
+                                                <div className="flex flex-wrap gap-2 mt-3">
+                                                  <span className="text-xs text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full">
+                                                    {activity.activityType}
+                                                  </span>
+                                                  <span className="text-xs text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full">
+                                                    {activity.credentialId}
+                                                  </span>
+                                                  <span className="text-xs text-yellow-600">
+                                                    {new Date(
+                                                      activity.createdAt
+                                                    ).toLocaleDateString()}
+                                                  </span>
+                                                </div>
+                                              </motion.div>
+                                            )
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                             </div>
-                            <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                              Matched
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </motion.div>
-            ))}
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       )}

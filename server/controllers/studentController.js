@@ -6,6 +6,7 @@ const Student = require("../models/student");
 const StudentPortfolio = require("../models/studentPortfolio");
 const cloudinary = require("../config/coudinary");
 const PDFDocument = require("pdfkit");
+const { askGemini } = require("../config/gemini");
 
 // ================== Get Dashboard Data (processed for charts/cards) ==================
 module.exports.getDashboardData = async (req, res) => {
@@ -23,6 +24,43 @@ module.exports.getDashboardData = async (req, res) => {
 
   // --- Activities ---
   const activities = await Activity.find({ student: studentId });
+
+  // Gemini Data
+  const activitiesGemini = await Activity.find({
+    student: studentId,
+    status: "Approved",
+  });
+
+  const studentDataGemini = {
+    attendance,
+    grade,
+    activitiesGemini,
+  };
+
+  // custom prompt
+  const prompt = `
+  You are a career mentor speaking directly to a student. 
+  Your tone should be clear, encouraging, and straight to the point. 
+  Never say "the student" or talk in third person — always use "you".  
+
+  Use this structure in your response:
+
+  **Career Paths:**  
+  Briefly suggest possible career directions based on academics, attendance, and activities.  
+
+  **Strengths:**  
+  Point out what the student is doing well.  
+
+  **Areas to Improve:**  
+  Give direct advice on weak areas (be constructive, not harsh).  
+
+  **Recommendations:**  
+  Actionable next steps the student should take (skills, habits, opportunities).  
+
+  Keep the response concise (6–8 sentences max). 
+  Avoid long paragraphs — use short, impactful sentences.`;
+
+  const insights = await askGemini(prompt, studentDataGemini);
 
   // Attendance Stats
   let attendancePercent = 0;
@@ -110,6 +148,7 @@ module.exports.getDashboardData = async (req, res) => {
         },
       ],
     },
+    ai_insights: insights,
   };
 
   res.status(200).json({
