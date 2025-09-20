@@ -423,7 +423,7 @@ const StudentDashboard = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="w-full flex items-center gap-3 px-4 py-3 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg font-medium"
-              onClick={() => (window.location.href = "/academics")}
+              onClick={() => (window.location.href = "/student/academics")}
             >
               <FiAward className="h-5 w-5" />
               View Academic Performance
@@ -433,7 +433,7 @@ const StudentDashboard = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="w-full flex items-center gap-3 px-4 py-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg font-medium"
-              onClick={() => (window.location.href = "/apply-approval")}
+              onClick={() => (window.location.href = "/student/approval")}
             >
               <FiActivity className="h-5 w-5" />
               Apply for Activity Approval
