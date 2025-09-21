@@ -18,6 +18,9 @@ import {
   FiFileText,
   FiExternalLink,
   FiActivity,
+  FiShield,
+  FiCheckCircle,
+  FiClock,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -145,6 +148,30 @@ const StudentDetails = () => {
         return "bg-green-100 text-green-800";
       default:
         return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getIssuerVerificationStatus = (activity) => {
+    if (activity.activityType !== "Extra-Curricular") {
+      return {
+        text: "Not Required",
+        color: "bg-gray-100 text-gray-800",
+        icon: <FiShield className="h-3 w-3 text-gray-500" />,
+      };
+    }
+
+    if (activity.isIssuerVerified) {
+      return {
+        text: "Verified by Issuer",
+        color: "bg-green-100 text-green-800",
+        icon: <FiCheckCircle className="h-3 w-3 text-green-500" />,
+      };
+    } else {
+      return {
+        text: "Pending Verification",
+        color: "bg-yellow-100 text-yellow-800",
+        icon: <FiClock className="h-3 w-3 text-yellow-500" />,
+      };
     }
   };
 
@@ -436,7 +463,9 @@ const StudentDetails = () => {
                   min="0"
                   max="10"
                   value={gradeForm.cgpa}
-                  onChange={(e) => setGradeForm({ cgpa: e.target.value })}
+                  onChange={(e) =>
+                    setGradeForm({ ...gradeForm, cgpa: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#10B981]"
                   required
                 />
@@ -512,64 +541,83 @@ const StudentDetails = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredActivities.map((activity) => (
-              <motion.div
-                key={activity._id}
-                whileHover={{ scale: 1.02 }}
-                className="bg-gray-50 rounded-lg p-4 border border-gray-200"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-medium text-[#1F2937]">
-                      {activity.title}
-                    </h3>
-                    <p className="text-sm text-[#4B5563]">
-                      {activity.credentialId}
-                    </p>
+            {filteredActivities.map((activity) => {
+              const issuerStatus = getIssuerVerificationStatus(activity);
+              return (
+                <motion.div
+                  key={activity._id}
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 className="font-medium text-[#1F2937]">
+                        {activity.title}
+                      </h3>
+                      <p className="text-sm text-[#4B5563]">
+                        {activity.credentialId}
+                      </p>
+                    </div>
+                    {activity.activityType && (
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${getActivityTypeColor(
+                          activity.activityType
+                        )}`}
+                      >
+                        {activity.activityType}
+                      </span>
+                    )}
                   </div>
-                  {activity.activityType && (
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${getActivityTypeColor(
-                        activity.activityType
-                      )}`}
-                    >
-                      {activity.activityType}
+
+                  <p className="text-sm text-[#4B5563] mb-3 line-clamp-2">
+                    {activity.description}
+                  </p>
+
+                  {/* Issuer Verification Status */}
+                  {activity.activityType === "Extra-Curricular" && (
+                    <div className="mb-3">
+                      <div className="flex items-center gap-1">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${issuerStatus.color}`}
+                        >
+                          {issuerStatus.icon}
+                          {issuerStatus.text}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {activity.remarks && (
+                    <div className="mb-3">
+                      <p className="text-xs font-medium text-[#4B5563]">
+                        Remarks:
+                      </p>
+                      <p className="text-xs text-[#6B7280]">
+                        {activity.remarks}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-[#6B7280]">
+                      {new Date(activity.createdAt).toLocaleDateString()}
                     </span>
-                  )}
-                </div>
-
-                <p className="text-sm text-[#4B5563] mb-3 line-clamp-2">
-                  {activity.description}
-                </p>
-
-                {activity.remarks && (
-                  <div className="mb-3">
-                    <p className="text-xs font-medium text-[#4B5563]">
-                      Remarks:
-                    </p>
-                    <p className="text-xs text-[#6B7280]">{activity.remarks}</p>
+                    {activity.attachmentLink && (
+                      <motion.a
+                        whileHover={{ scale: 1.1 }}
+                        href={activity.attachmentLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-1 text-blue-600 hover:bg-blue-100 rounded"
+                        title="View Attachment"
+                      >
+                        <FiExternalLink className="h-4 w-4" />
+                      </motion.a>
+                    )}
                   </div>
-                )}
-
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-[#6B7280]">
-                    {new Date(activity.createdAt).toLocaleDateString()}
-                  </span>
-                  {activity.attachmentLink && (
-                    <motion.a
-                      whileHover={{ scale: 1.1 }}
-                      href={activity.attachmentLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-1 text-blue-600 hover:bg-blue-100 rounded"
-                      title="View Attachment"
-                    >
-                      <FiExternalLink className="h-4 w-4" />
-                    </motion.a>
-                  )}
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </div>

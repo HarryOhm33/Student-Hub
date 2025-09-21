@@ -15,6 +15,7 @@ import {
   FiChevronDown,
   FiChevronUp,
   FiFileText,
+  FiShield,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -85,6 +86,31 @@ const StudentSearch = () => {
     });
 
     return categorized;
+  };
+
+  // Function to get issuer verification status
+  const getIssuerVerificationStatus = (activity) => {
+    if (activity.activityType !== "Extra-Curricular") {
+      return {
+        text: "Not Required",
+        color: "bg-gray-100 text-gray-800",
+        icon: <FiShield className="h-3 w-3 text-gray-500" />,
+      };
+    }
+
+    if (activity.isIssuerVerified) {
+      return {
+        text: "Verified by Issuer",
+        color: "bg-green-100 text-green-800",
+        icon: <FiCheckCircle className="h-3 w-3 text-green-500" />,
+      };
+    } else {
+      return {
+        text: "Pending Verification",
+        color: "bg-yellow-100 text-yellow-800",
+        icon: <FiClock className="h-3 w-3 text-yellow-500" />,
+      };
+    }
   };
 
   return (
@@ -223,7 +249,7 @@ const StudentSearch = () => {
                         {isExpanded ? (
                           <FiChevronUp className="h-5 w-5 text-gray-500" />
                         ) : (
-                          <FiChevronDown className="h-5 w-5 text-gray-500" />
+                          <FiChevronDown className="h-5 w-5 text-gray-5" />
                         )}
                       </div>
                     </div>
@@ -357,40 +383,79 @@ const StudentSearch = () => {
                                         </h6>
                                         <div className="space-y-3">
                                           {categorizedActivities.validated.map(
-                                            (activity) => (
-                                              <motion.div
-                                                key={activity._id}
-                                                className="p-4 bg-green-50 rounded-lg border border-green-100"
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ delay: 0.1 }}
-                                              >
-                                                <p className="font-medium text-green-800">
-                                                  {activity.title}
-                                                </p>
-                                                <p className="text-sm text-green-700 mt-1">
-                                                  {activity.description}
-                                                </p>
-                                                <div className="flex flex-wrap gap-2 mt-3">
-                                                  <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
-                                                    {activity.activityType}
-                                                  </span>
-                                                  <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
-                                                    {activity.credentialId}
-                                                  </span>
-                                                  <span className="text-xs text-green-600">
-                                                    {new Date(
-                                                      activity.createdAt
-                                                    ).toLocaleDateString()}
-                                                  </span>
-                                                </div>
-                                                {activity.remarks && (
-                                                  <p className="text-xs text-green-600 mt-2">
-                                                    Remarks: {activity.remarks}
+                                            (activity) => {
+                                              const issuerStatus =
+                                                getIssuerVerificationStatus(
+                                                  activity
+                                                );
+                                              return (
+                                                <motion.div
+                                                  key={activity._id}
+                                                  className="p-4 bg-green-50 rounded-lg border border-green-100"
+                                                  initial={{
+                                                    opacity: 0,
+                                                    y: 10,
+                                                  }}
+                                                  animate={{ opacity: 1, y: 0 }}
+                                                  transition={{ delay: 0.1 }}
+                                                >
+                                                  <div className="flex justify-between items-start mb-2">
+                                                    <p className="font-medium text-green-800">
+                                                      {activity.title}
+                                                    </p>
+                                                    {activity.activityType && (
+                                                      <span
+                                                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                          activity.activityType ===
+                                                          "Curricular"
+                                                            ? "bg-blue-100 text-blue-800"
+                                                            : activity.activityType ===
+                                                              "Co-Curricular"
+                                                            ? "bg-purple-100 text-purple-800"
+                                                            : activity.activityType ===
+                                                              "Extra-Curricular"
+                                                            ? "bg-green-100 text-green-800"
+                                                            : "bg-gray-100 text-gray-800"
+                                                        }`}
+                                                      >
+                                                        {activity.activityType}
+                                                      </span>
+                                                    )}
+                                                  </div>
+                                                  <p className="text-sm text-green-700 mt-1">
+                                                    {activity.description}
                                                   </p>
-                                                )}
-                                              </motion.div>
-                                            )
+                                                  <div className="flex flex-wrap gap-2 mt-3">
+                                                    <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                                                      {activity.credentialId}
+                                                    </span>
+                                                    <span className="text-xs text-green-600">
+                                                      {new Date(
+                                                        activity.createdAt
+                                                      ).toLocaleDateString()}
+                                                    </span>
+                                                  </div>
+                                                  {/* Issuer Verification Status */}
+                                                  {activity.activityType ===
+                                                    "Extra-Curricular" && (
+                                                    <div className="mt-2">
+                                                      <span
+                                                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${issuerStatus.color}`}
+                                                      >
+                                                        {issuerStatus.icon}
+                                                        {issuerStatus.text}
+                                                      </span>
+                                                    </div>
+                                                  )}
+                                                  {activity.remarks && (
+                                                    <p className="text-xs text-green-600 mt-2">
+                                                      Remarks:{" "}
+                                                      {activity.remarks}
+                                                    </p>
+                                                  )}
+                                                </motion.div>
+                                              );
+                                            }
                                           )}
                                         </div>
                                       </div>
@@ -411,40 +476,79 @@ const StudentSearch = () => {
                                         </h6>
                                         <div className="space-y-3">
                                           {categorizedActivities.unvalidated.map(
-                                            (activity) => (
-                                              <motion.div
-                                                key={activity._id}
-                                                className="p-4 bg-red-50 rounded-lg border border-red-100"
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ delay: 0.2 }}
-                                              >
-                                                <p className="font-medium text-red-800">
-                                                  {activity.title}
-                                                </p>
-                                                <p className="text-sm text-red-700 mt-1">
-                                                  {activity.description}
-                                                </p>
-                                                <div className="flex flex-wrap gap-2 mt-3">
-                                                  <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">
-                                                    {activity.activityType}
-                                                  </span>
-                                                  <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">
-                                                    {activity.credentialId}
-                                                  </span>
-                                                  <span className="text-xs text-red-600">
-                                                    {new Date(
-                                                      activity.createdAt
-                                                    ).toLocaleDateString()}
-                                                  </span>
-                                                </div>
-                                                {activity.remarks && (
-                                                  <p className="text-xs text-red-600 mt-2">
-                                                    Remarks: {activity.remarks}
+                                            (activity) => {
+                                              const issuerStatus =
+                                                getIssuerVerificationStatus(
+                                                  activity
+                                                );
+                                              return (
+                                                <motion.div
+                                                  key={activity._id}
+                                                  className="p-4 bg-red-50 rounded-lg border border-red-100"
+                                                  initial={{
+                                                    opacity: 0,
+                                                    y: 10,
+                                                  }}
+                                                  animate={{ opacity: 1, y: 0 }}
+                                                  transition={{ delay: 0.2 }}
+                                                >
+                                                  <div className="flex justify-between items-start mb-2">
+                                                    <p className="font-medium text-red-800">
+                                                      {activity.title}
+                                                    </p>
+                                                    {activity.activityType && (
+                                                      <span
+                                                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                          activity.activityType ===
+                                                          "Curricular"
+                                                            ? "bg-blue-100 text-blue-800"
+                                                            : activity.activityType ===
+                                                              "Co-Curricular"
+                                                            ? "bg-purple-100 text-purple-800"
+                                                            : activity.activityType ===
+                                                              "Extra-Curricular"
+                                                            ? "bg-green-100 text-green-800"
+                                                            : "bg-gray-100 text-gray-800"
+                                                        }`}
+                                                      >
+                                                        {activity.activityType}
+                                                      </span>
+                                                    )}
+                                                  </div>
+                                                  <p className="text-sm text-red-700 mt-1">
+                                                    {activity.description}
                                                   </p>
-                                                )}
-                                              </motion.div>
-                                            )
+                                                  <div className="flex flex-wrap gap-2 mt-3">
+                                                    <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                                                      {activity.credentialId}
+                                                    </span>
+                                                    <span className="text-xs text-red-600">
+                                                      {new Date(
+                                                        activity.createdAt
+                                                      ).toLocaleDateString()}
+                                                    </span>
+                                                  </div>
+                                                  {/* Issuer Verification Status */}
+                                                  {activity.activityType ===
+                                                    "Extra-Curricular" && (
+                                                    <div className="mt-2">
+                                                      <span
+                                                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${issuerStatus.color}`}
+                                                      >
+                                                        {issuerStatus.icon}
+                                                        {issuerStatus.text}
+                                                      </span>
+                                                    </div>
+                                                  )}
+                                                  {activity.remarks && (
+                                                    <p className="text-xs text-red-600 mt-2">
+                                                      Remarks:{" "}
+                                                      {activity.remarks}
+                                                    </p>
+                                                  )}
+                                                </motion.div>
+                                              );
+                                            }
                                           )}
                                         </div>
                                       </div>
@@ -465,35 +569,73 @@ const StudentSearch = () => {
                                         </h6>
                                         <div className="space-y-3">
                                           {categorizedActivities.unlooked.map(
-                                            (activity) => (
-                                              <motion.div
-                                                key={activity._id}
-                                                className="p-4 bg-yellow-50 rounded-lg border border-yellow-100"
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ delay: 0.3 }}
-                                              >
-                                                <p className="font-medium text-yellow-800">
-                                                  {activity.title}
-                                                </p>
-                                                <p className="text-sm text-yellow-700 mt-1">
-                                                  {activity.description}
-                                                </p>
-                                                <div className="flex flex-wrap gap-2 mt-3">
-                                                  <span className="text-xs text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full">
-                                                    {activity.activityType}
-                                                  </span>
-                                                  <span className="text-xs text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full">
-                                                    {activity.credentialId}
-                                                  </span>
-                                                  <span className="text-xs text-yellow-600">
-                                                    {new Date(
-                                                      activity.createdAt
-                                                    ).toLocaleDateString()}
-                                                  </span>
-                                                </div>
-                                              </motion.div>
-                                            )
+                                            (activity) => {
+                                              const issuerStatus =
+                                                getIssuerVerificationStatus(
+                                                  activity
+                                                );
+                                              return (
+                                                <motion.div
+                                                  key={activity._id}
+                                                  className="p-4 bg-yellow-50 rounded-lg border border-yellow-100"
+                                                  initial={{
+                                                    opacity: 0,
+                                                    y: 10,
+                                                  }}
+                                                  animate={{ opacity: 1, y: 0 }}
+                                                  transition={{ delay: 0.3 }}
+                                                >
+                                                  <div className="flex justify-between items-start mb-2">
+                                                    <p className="font-medium text-yellow-800">
+                                                      {activity.title}
+                                                    </p>
+                                                    {activity.activityType && (
+                                                      <span
+                                                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                          activity.activityType ===
+                                                          "Curricular"
+                                                            ? "bg-blue-100 text-blue-800"
+                                                            : activity.activityType ===
+                                                              "Co-Curricular"
+                                                            ? "bg-purple-100 text-purple-800"
+                                                            : activity.activityType ===
+                                                              "Extra-Curricular"
+                                                            ? "bg-green-100 text-green-800"
+                                                            : "bg-gray-100 text-gray-800"
+                                                        }`}
+                                                      >
+                                                        {activity.activityType}
+                                                      </span>
+                                                    )}
+                                                  </div>
+                                                  <p className="text-sm text-yellow-700 mt-1">
+                                                    {activity.description}
+                                                  </p>
+                                                  <div className="flex flex-wrap gap-2 mt-3">
+                                                    <span className="text-xs text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full">
+                                                      {activity.credentialId}
+                                                    </span>
+                                                    <span className="text-xs text-yellow-600">
+                                                      {new Date(
+                                                        activity.createdAt
+                                                      ).toLocaleDateString()}
+                                                    </span>
+                                                  </div>
+                                                  {/* Issuer Verification Status */}
+                                                  {activity.activityType ===
+                                                    "Extra-Curricular" && (
+                                                    <div className="mt-2">
+                                                      <span
+                                                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${issuerStatus.color}`}
+                                                      >
+                                                        {issuerStatus.icon}
+                                                        {issuerStatus.text}
+                                                      </span>
+                                                    </div>
+                                                  )}
+                                                </motion.div>
+                                              );
+                                            }
                                           )}
                                         </div>
                                       </div>

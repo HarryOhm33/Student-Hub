@@ -443,3 +443,124 @@ module.exports.generateStudentWelcomeEmail = (
 </html>
   `;
 };
+
+module.exports.generateIssuerApprovalEmail = (
+  studentName,
+  activityTitle,
+  approvalLink
+) => {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Issuer Approval Required</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      background-color: #f9fafb;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+    }
+    .header {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      padding: 30px 20px;
+      text-align: center;
+      border-radius: 8px 8px 0 0;
+    }
+    .header h1 {
+      color: white;
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    .content {
+      padding: 30px;
+    }
+    .welcome-text {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #374151;
+    }
+    .verification-box {
+      background-color: #f7fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 25px;
+      text-align: center;
+      margin: 25px 0;
+    }
+    .button {
+      display: inline-block;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 16px;
+      margin: 15px 0;
+    }
+    .link-text {
+      word-break: break-all;
+      color: #4b5563;
+      font-size: 14px;
+      margin-top: 15px;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      color: #718096;
+      border-top: 1px solid #e2e8f0;
+    }
+    .warning {
+      background-color: #fff5f5;
+      border: 1px solid #fed7d7;
+      border-radius: 6px;
+      padding: 15px;
+      margin: 20px 0;
+      color: #c53030;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Approval Required</h1>
+    </div>
+    
+    <div class="content">
+      <p class="welcome-text">Hello Issuer,</p>
+      <p>Student <strong>${studentName}</strong> has submitted an <b>Extra-Curricular Activity</b> titled:</p>
+      <p><strong>${activityTitle}</strong></p>
+      
+      <div class="verification-box">
+        <a href="${approvalLink}" class="button">Review & Approve Activity</a>
+        <p class="link-text">Or copy and paste this link:<br>${approvalLink}</p>
+      </div>
+      
+      <div class="warning">
+        <strong>Note:</strong> This approval link will expire in 5 days.
+      </div>
+      
+      <p>Thank you,<br>The Institute Portal Team</p>
+    </div>
+    
+    <div class="footer">
+      <p>© ${new Date().getFullYear()} Institute Portal. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+};

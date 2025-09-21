@@ -18,6 +18,8 @@ import {
   FiDownload,
   FiEye,
   FiSend,
+  FiMail,
+  FiShield,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -35,6 +37,7 @@ const ApplyApproval = () => {
     activityType: "",
     credentialId: "",
     appliedTo: "",
+    issuerEmail: "",
     attachment: null,
   });
   const [submitting, setSubmitting] = useState(false);
@@ -73,7 +76,7 @@ const ApplyApproval = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitting(true); // 🔹 start loading
+    setSubmitting(true);
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("title", formData.title);
@@ -81,6 +84,15 @@ const ApplyApproval = () => {
       formDataToSend.append("activityType", formData.activityType);
       formDataToSend.append("credentialId", formData.credentialId);
       formDataToSend.append("appliedTo", formData.appliedTo);
+
+      // Add issuer email only for Extra-Curricular activities
+      if (
+        formData.activityType === "Extra-Curricular" &&
+        formData.issuerEmail
+      ) {
+        formDataToSend.append("issuerEmail", formData.issuerEmail);
+      }
+
       if (formData.attachment) {
         formDataToSend.append("attachment", formData.attachment);
       }
@@ -96,6 +108,7 @@ const ApplyApproval = () => {
           activityType: "",
           credentialId: "",
           appliedTo: "",
+          issuerEmail: "",
           attachment: null,
         });
         fetchActivities(); // Refresh the list
@@ -106,7 +119,7 @@ const ApplyApproval = () => {
       console.error("Error applying for activity:", error);
       toast.error("Error submitting application!");
     } finally {
-      setSubmitting(false); // 🔹 stop loading
+      setSubmitting(false);
     }
   };
 
@@ -155,6 +168,30 @@ const ApplyApproval = () => {
         return "bg-red-100 text-red-800";
       default:
         return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getIssuerVerificationStatus = (activity) => {
+    if (activity.activityType !== "Extra-Curricular") {
+      return {
+        text: "Not Required",
+        color: "bg-gray-100 text-gray-800",
+        icon: <FiShield className="h-4 w-4 text-gray-500" />,
+      };
+    }
+
+    if (activity.isIssuerVerified) {
+      return {
+        text: "Verified by Issuer",
+        color: "bg-green-100 text-green-800",
+        icon: <FiCheckCircle className="h-4 w-4 text-green-500" />,
+      };
+    } else {
+      return {
+        text: "Pending Verification",
+        color: "bg-yellow-100 text-yellow-800",
+        icon: <FiClock className="h-4 w-4 text-yellow-500" />,
+      };
     }
   };
 
@@ -248,6 +285,9 @@ const ApplyApproval = () => {
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[#1F2937] uppercase tracking-wider">
+                    Issuer Verification
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[#1F2937] uppercase tracking-wider">
                     Date
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[#1F2937] uppercase tracking-wider">
@@ -261,94 +301,89 @@ const ApplyApproval = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredActivities.map((activity) => (
-                  <tr key={activity._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <div>
-                        <div className="text-sm font-medium text-[#1F2937]">
-                          {activity.title}
-                        </div>
-                        <div className="text-sm text-[#4B5563] line-clamp-2">
-                          {activity.description}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 rounded-full bg-[#10B981] flex items-center justify-center text-white mr-3">
-                          <FiUser className="h-4 w-4" />
-                        </div>
+                {filteredActivities.map((activity) => {
+                  const issuerStatus = getIssuerVerificationStatus(activity);
+                  return (
+                    <tr key={activity._id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4">
                         <div>
                           <div className="text-sm font-medium text-[#1F2937]">
-                            {activity.faculty.name}
+                            {activity.title}
                           </div>
-                          <div className="text-xs text-[#4B5563]">
-                            {activity.faculty.email}
+                          <div className="text-sm text-[#4B5563] line-clamp-2">
+                            {activity.description}
                           </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
-                      {activity.activityType || activity.acitvityType || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
-                      {activity.credentialId}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                          activity.status
-                        )}`}
-                      >
-                        {getStatusIcon(activity.status)}
-                        {activity.status}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
-                      {new Date(activity.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-2">
-                        {activity.attachmentLink && (
-                          <motion.a
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            href={activity.attachmentLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
-                            title="View Attachment"
-                          >
-                            <FiEye className="h-4 w-4" />
-                          </motion.a>
-                        )}
-                        {/* {activity.remarks && (
-                          <div className="relative group">
-                            <button
-                              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-                              title="View Remarks"
-                            >
-                              <FiFileText className="h-4 w-4" />
-                            </button>
-                            <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white shadow-lg rounded-lg border border-gray-200 z-10">
-                              <p className="text-sm font-medium text-[#1F2937]">
-                                Remarks:
-                              </p>
-                              <p className="text-sm text-[#4B5563] mt-1">
-                                {activity.remarks}
-                              </p>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 rounded-full bg-[#10B981] flex items-center justify-center text-white mr-3">
+                            <FiUser className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-[#1F2937]">
+                              {activity.faculty?.name || "N/A"}
+                            </div>
+                            <div className="text-xs text-[#4B5563]">
+                              {activity.faculty?.email || "N/A"}
                             </div>
                           </div>
-                        )} */}
-                      </div>
-                    </td>
-                    {activeTab !== "Pending" && (
-                      <td className="px-6 py-4 whitespace-normal text-sm text-[#4B5563]">
-                        {activity.remarks || "—"}
+                        </div>
                       </td>
-                    )}
-                  </tr>
-                ))}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
+                        {activity.activityType ||
+                          activity.acitvityType ||
+                          "N/A"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
+                        {activity.credentialId}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                            activity.status
+                          )}`}
+                        >
+                          {getStatusIcon(activity.status)}
+                          {activity.status}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${issuerStatus.color}`}
+                        >
+                          {issuerStatus.icon}
+                          {issuerStatus.text}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
+                        {new Date(activity.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex gap-2">
+                          {activity.attachmentLink && (
+                            <motion.a
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              href={activity.attachmentLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
+                              title="View Attachment"
+                            >
+                              <FiEye className="h-4 w-4" />
+                            </motion.a>
+                          )}
+                        </div>
+                      </td>
+                      {activeTab !== "Pending" && (
+                        <td className="px-6 py-4 whitespace-normal text-sm text-[#4B5563]">
+                          {activity.remarks || "—"}
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -433,6 +468,38 @@ const ApplyApproval = () => {
                   </select>
                 </div>
 
+                {/* Issuer Email Field (Only for Extra-Curricular) */}
+                {formData.activityType === "Extra-Curricular" && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <label className="block text-sm font-medium text-[#4B5563] mb-1">
+                      Issuer's Email *
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <FiMail className="h-4 w-4 text-gray-400" />
+                      </div>
+                      <input
+                        type="email"
+                        name="issuerEmail"
+                        placeholder="Issuer's Email Address"
+                        value={formData.issuerEmail}
+                        onChange={handleInputChange}
+                        className="w-full pl-10 px-4 py-2 bg-white border border-gray-300 rounded-lg text-[#1F2937] placeholder-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <p className="text-xs text-[#6B7280] mt-1">
+                      Enter the email of the organization or person who issued
+                      this certificate
+                    </p>
+                  </motion.div>
+                )}
+
                 <div>
                   <label className="block text-sm font-medium text-[#4B5563] mb-1">
                     Credential ID *
@@ -483,17 +550,18 @@ const ApplyApproval = () => {
                     Supported formats: JPG, PNG, PDF, DOC (Max 5MB)
                   </p>
                 </div>
+
                 <motion.button
                   whileHover={{ scale: submitting ? 1 : 1.02 }}
                   whileTap={{ scale: submitting ? 1 : 0.98 }}
                   type="submit"
                   disabled={submitting}
                   className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg font-semibold shadow-md 
-    ${
-      submitting
-        ? "bg-gray-400 cursor-not-allowed"
-        : "bg-[#10B981] hover:bg-[#059669] text-white"
-    }`}
+                    ${
+                      submitting
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-[#10B981] hover:bg-[#059669] text-white"
+                    }`}
                 >
                   {submitting ? (
                     <>

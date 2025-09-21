@@ -7,6 +7,7 @@ const Grade = require("../models/grade");
 const Activity = require("../models/activity");
 const Institute = require("../models/institute");
 const Report = require("../models/report");
+const IssuerApprovalSession = require("../models/issuerApprovalSession");
 
 module.exports.getInstituteWiseStatsByAadhar = async (req, res) => {
   const { aadhar } = req.body;
@@ -77,7 +78,7 @@ module.exports.getInstituteWiseStatsByAadhar = async (req, res) => {
             institute: instituteId,
           })
             .select(
-              "title description credentialId status remarks activityType createdAt"
+              "title description credentialId status remarks isIssuerVerificationRequired isIssuerVerified activityType createdAt"
             )
             .lean();
 
@@ -136,5 +137,94 @@ module.exports.getHomeData = async (req, res) => {
       instituteCount,
       reportCount,
     },
+  });
+};
+
+//================Manager Verification Session Details===========
+
+module.exports.getIssuerApprovalSession = async (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(400).json({ valid: false, message: "Token is required" });
+  }
+
+  // Find session and populate student + activity
+  const session = await IssuerApprovalSession.findOne({ token })
+    .populate({
+      path: "activity",
+      select: "title description activityType createdAt",
+      populate: {
+        path: "student",
+        select: "name regNumber email department",
+      },
+    })
+    .lean();
+
+  if (!session) {
+    return res
+      .status(404)
+      .json({ valid: false, message: "Session not found or expired" });
+  }
+
+  // Exclude token and managerEmail
+  const { token: _token, issuerEmail, ...sessionWithoutSensitive } = session;
+
+  return res.status(200).json({
+    valid: true,
+    message: "Issuer approval session fetched successfully",
+    session: sessionWithoutSensitive,
+  });
+};
+
+// ================== Manager Verify Activity ==================
+module.exports.verifyIssuerApproval = async (req, res) => {
+  const { token, credentialId } = req.body; // both required
+  if (!token || !credentialId) {
+    return res
+      .status(400)
+      .json({ valid: false, message: "Token and credentialId are required" });
+  }
+
+  // find session
+  const session = await IssuerApprovalSession.findOne({ token });
+  if (!session) {
+    return res
+      .status(400)
+      .json({ valid: false, message: "Invalid or expired session" });
+  }
+
+  // check expiry (auto-delete is set, but double-check here)
+  if (session.expiresAt < new Date()) {
+    return res
+      .status(400)
+      .json({ valid: false, message: "This approval link has expired" });
+  }
+
+  // update activity: verify credentialId matches
+  const activity = await Activity.findById(session.activity);
+  if (!activity) {
+    return res
+      .status(404)
+      .json({ valid: false, message: "Activity not found" });
+  }
+
+  if (activity.credentialId.toUpperCase() !== credentialId.toUpperCase()) {
+    return res.status(400).json({
+      valid: false,
+      message: "Credential ID mismatch. Verification failed.",
+    });
+  }
+
+  // mark issuer verified
+  activity.isIssuerVerified = true;
+  await activity.save();
+
+  // delete session after use
+  await IssuerApprovalSession.deleteOne({ _id: session._id });
+
+  return res.status(200).json({
+    valid: true,
+    message: "Activity verified successfully",
+    activity,
   });
 };

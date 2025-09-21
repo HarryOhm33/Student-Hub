@@ -139,7 +139,7 @@ module.exports.getStudentById = async (req, res) => {
     student: student._id,
     status: "Approved",
   }).select(
-    "title description credentialId activityType attachmentLink remarks createdAt"
+    "title description credentialId activityType attachmentLink isIssuerVerificationRequired isIssuerVerified remarks createdAt"
   );
 
   res.status(200).json({

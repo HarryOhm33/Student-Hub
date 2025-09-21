@@ -13,8 +13,8 @@ const activitySchema = new mongoose.Schema(
     },
     title: { type: String, required: true }, // e.g. "Hackathon Participation"
     description: { type: String }, // optional details
-    attachmentLink: { type: String }, // frontend provides a link (Drive/Cloud)
-    credentialId: { type: String, required: true, unique: true }, // unique activity credential
+    attachmentLink: { type: String }, // Drive/Cloud/Cloudinary link
+    credentialId: { type: String, required: true, unique: true }, // unique credential
     status: {
       type: String,
       enum: ["Pending", "Approved", "Rejected"],
@@ -29,7 +29,16 @@ const activitySchema = new mongoose.Schema(
       ref: "Institute",
       required: true,
     },
-    remarks: { type: String }, // faculty can add remarks when validating
+    remarks: { type: String }, // faculty validation remarks
+    // 🔹 Manager approval stage
+    isIssuerVerificationRequired: {
+      type: Boolean,
+      default: false,
+    },
+    isIssuerVerified: {
+      type: Boolean,
+      default: false, // stays false until manager approves
+    },
   },
   { timestamps: true }
 );

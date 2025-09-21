@@ -7,6 +7,10 @@ const StudentPortfolio = require("../models/studentPortfolio");
 const cloudinary = require("../config/coudinary");
 const PDFDocument = require("pdfkit");
 const { askGemini } = require("../config/gemini");
+const IssuerApprovalSession = require("../models/issuerApprovalSession");
+const crypto = require("crypto");
+const sendEmail = require("../utils/sendEmail");
+const { generateIssuerApprovalEmail } = require("../utils/mailTemplates");
 
 // ================== Get Dashboard Data (processed for charts/cards) ==================
 module.exports.getDashboardData = async (req, res) => {
@@ -172,7 +176,7 @@ module.exports.getMyAcademics = async (req, res) => {
     student: studentId,
     status: "Approved",
   }).select(
-    "title description credentialId activityType attachmentLink remarks createdAt"
+    "title description credentialId activityType attachmentLink remarks isIssuerVerificationRequired isIssuerVerified createdAt"
   );
 
   res.status(200).json({
@@ -204,13 +208,29 @@ module.exports.getFacultyList = async (req, res) => {
 
 // ================== Student: Apply for Activity ==================
 module.exports.applyActivity = async (req, res) => {
-  const { title, description, credentialId, appliedTo, activityType } =
-    req.body;
+  const {
+    title,
+    description,
+    credentialId,
+    appliedTo,
+    activityType,
+    issuerEmail,
+  } = req.body;
   let attachmentLink = null;
 
   const faculty = await Faculty.findById(appliedTo);
   if (!faculty) {
-    return res.status(404).json({ message: "Faculty not found" });
+    return res.status(404).json({ valid: false, message: "Faculty not found" });
+  }
+
+  // If Extra-Curricular → create manager approval session
+  if (activityType === "Extra-Curricular") {
+    if (!issuerEmail) {
+      return res.status(400).json({
+        valid: false,
+        message: "Issuer email is required for Extra-Curricular activities",
+      });
+    }
   }
 
   // upload file if present
@@ -225,26 +245,60 @@ module.exports.applyActivity = async (req, res) => {
       );
       stream.end(req.file.buffer);
     });
-
     attachmentLink = result.secure_url;
   }
 
   // create new activity
   const activity = await Activity.create({
-    student: req.user._id, // from auth middleware
-    faculty: appliedTo, // faculty to validate
-    institute: req.user.institute, // institute from user token/session
+    student: req.user._id,
+    faculty: appliedTo,
+    institute: req.user.institute,
     title,
     description,
     attachmentLink,
     credentialId,
     activityType,
     status: "Pending",
+    isIssuerVerificationRequired: activityType === "Extra-Curricular",
   });
+
+  // If Extra-Curricular → create manager approval session
+  if (activityType === "Extra-Curricular") {
+    // generate token
+    const token = crypto.randomBytes(32).toString("hex");
+
+    // create session
+    await IssuerApprovalSession.create({
+      activity: activity._id,
+      issuerEmail,
+      token,
+    });
+
+    // send email to manager
+    const approvalUrl = `${process.env.FRONTEND_URL}/issuer/approve?token=${token}`;
+
+    const htmlContent = generateIssuerApprovalEmail(
+      req.user.name,
+      title,
+      approvalUrl
+    );
+
+    await sendEmail(
+      issuerEmail,
+      "Approval Required: Extra-Curricular Activity",
+      {
+        text: `Please review at The Following Activity`,
+        html: htmlContent,
+      }
+    );
+  }
 
   res.status(200).json({
     valid: true,
-    message: "Activity applied successfully. Awaiting faculty approval.",
+    message:
+      activityType === "Extra-Curricular"
+        ? "Activity applied successfully. Awaiting issuer & faculty approval."
+        : "Activity applied successfully. Awaiting faculty approval.",
     activity,
   });
 };

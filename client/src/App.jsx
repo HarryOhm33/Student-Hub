@@ -27,6 +27,7 @@ import Portfolio from "./Pages/Student/Portfolio";
 import Reports from "./Pages/Admin/Reports";
 import StudentSearch from "./Pages/StudentSearch";
 import NotFound from "./Pages/NotFound"; // Import the new component
+import IssuerApproval from "./Pages/IssuerApproval";
 
 function App() {
   return (
@@ -39,7 +40,7 @@ function App() {
           {/* Public routes */}
           <Route path="/" element={<Home />} />
           <Route path="/student-search" element={<StudentSearch />} />
-
+          <Route path="/issuer/approve" element={<IssuerApproval />} />"
           <Route element={<ProtectedAuth />}>
             <Route path="/auth/signup" element={<Signup />} />
             <Route path="/auth/verify" element={<Verify />} />
@@ -47,7 +48,6 @@ function App() {
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/reset-password" element={<ResetPassword />} />
           </Route>
-
           {/* Protected routes with sidebar layout */}
           <Route element={<DashboardLayout />}>
             <Route element={<ProtectedRoute role="admin" />}>
@@ -78,7 +78,6 @@ function App() {
             {/* Common protected routes for all roles */}
             <Route path="/profile" element={<Profile />} />
           </Route>
-
           {/* 404 Catch-all route - MUST BE LAST */}
           <Route path="*" element={<NotFound />} />
         </Routes>

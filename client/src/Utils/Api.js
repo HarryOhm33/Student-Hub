@@ -20,6 +20,12 @@ export const getInstituteWiseStatsAadhar = (data) =>
 
 export const getHomeData = () => axiosInstance.get("/api/open/home-data");
 
+export const getIssuerApprovalSession = (data) =>
+  axiosInstance.post("/api/open/issuer/get-session-info", data);
+
+export const verifyIssuerApproval = (data) =>
+  axiosInstance.post("/api/open/issuer/approve", data);
+
 // ===================== Admin APIs =====================
 
 // Get Admin Dashboard

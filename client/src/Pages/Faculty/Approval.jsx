@@ -15,6 +15,7 @@ import {
   FiUser,
   FiFileText,
   FiMessageSquare,
+  FiShield,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -116,6 +117,30 @@ const Approval = () => {
         return "bg-red-100 text-red-800";
       default:
         return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getIssuerVerificationStatus = (activity) => {
+    if (activity.activityType !== "Extra-Curricular") {
+      return {
+        text: "Not Required",
+        color: "bg-gray-100 text-gray-800",
+        icon: <FiShield className="h-4 w-4 text-gray-500" />,
+      };
+    }
+
+    if (activity.isIssuerVerified) {
+      return {
+        text: "Verified by Issuer",
+        color: "bg-green-100 text-green-800",
+        icon: <FiCheckCircle className="h-4 w-4 text-green-500" />,
+      };
+    } else {
+      return {
+        text: "Pending Verification",
+        color: "bg-yellow-100 text-yellow-800",
+        icon: <FiClock className="h-4 w-4 text-yellow-500" />,
+      };
     }
   };
 
@@ -261,6 +286,9 @@ const Approval = () => {
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[#1F2937] uppercase tracking-wider">
+                    Issuer Verification
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[#1F2937] uppercase tracking-wider">
                     Date
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[#1F2937] uppercase tracking-wider">
@@ -274,119 +302,114 @@ const Approval = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredActivities.map((activity) => (
-                  <tr key={activity._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 rounded-full bg-[#10B981] flex items-center justify-center text-white mr-3">
-                          <FiUser className="h-4 w-4" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-[#1F2937]">
-                            {activity.student.name}
+                {filteredActivities.map((activity) => {
+                  const issuerStatus = getIssuerVerificationStatus(activity);
+                  return (
+                    <tr key={activity._id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 rounded-full bg-[#10B981] flex items-center justify-center text-white mr-3">
+                            <FiUser className="h-4 w-4" />
                           </div>
-                          <div className="text-xs text-[#4B5563]">
-                            {activity.student.regNumber}
-                          </div>
-                          <div className="text-xs text-[#4B5563]">
-                            {activity.student.email}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div>
-                        <div className="text-sm font-medium text-[#1F2937]">
-                          {activity.title}
-                        </div>
-                        <div className="text-sm text-[#4B5563] line-clamp-2">
-                          {activity.description}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
-                      {activity.activityType || activity.acitvityType || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
-                      {activity.credentialId}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                          activity.status
-                        )}`}
-                      >
-                        {getStatusIcon(activity.status)}
-                        {activity.status}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
-                      {new Date(activity.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-2">
-                        {activity.attachmentLink && (
-                          <motion.a
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            href={activity.attachmentLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
-                            title="View Attachment"
-                          >
-                            <FiEye className="h-4 w-4" />
-                          </motion.a>
-                        )}
-                        {activity.status === "Pending" && (
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => openValidationModal(activity)}
-                            className="p-2 text-green-600 hover:bg-green-100 rounded-lg"
-                            title="Validate Activity"
-                          >
-                            <FiCheck className="h-4 w-4" />
-                          </motion.button>
-                        )}
-                        {activity.status !== "Pending" && (
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => openValidationModal(activity)}
-                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-                            title="Edit Validation"
-                          >
-                            <FiEdit className="h-4 w-4" />
-                          </motion.button>
-                        )}
-                        {/* {activity.remarks && (
-                          <div className="relative group">
-                            <button
-                              className="p-2 text-purple-600 hover:bg-purple-100 rounded-lg"
-                              title="View Remarks"
-                            >
-                              <FiMessageSquare className="h-4 w-4" />
-                            </button>
-                            <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white shadow-lg rounded-lg border border-gray-200 z-10">
-                              <p className="text-sm font-medium text-[#1F2937]">
-                                Remarks:
-                              </p>
-                              <p className="text-sm text-[#4B5563] mt-1">
-                                {activity.remarks}
-                              </p>
+                          <div>
+                            <div className="text-sm font-medium text-[#1F2937]">
+                              {activity.student.name}
+                            </div>
+                            <div className="text-xs text-[#4B5563]">
+                              {activity.student.regNumber}
+                            </div>
+                            <div className="text-xs text-[#4B5563]">
+                              {activity.student.email}
                             </div>
                           </div>
-                        )} */}
-                      </div>
-                    </td>
-                    {activeTab !== "Pending" && (
-                      <td className="px-6 py-4 whitespace-normal text-sm text-[#4B5563]">
-                        {activity.remarks || "—"}
+                        </div>
                       </td>
-                    )}
-                  </tr>
-                ))}
+                      <td className="px-6 py-4">
+                        <div>
+                          <div className="text-sm font-medium text-[#1F2937]">
+                            {activity.title}
+                          </div>
+                          <div className="text-sm text-[#4B5563] line-clamp-2">
+                            {activity.description}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
+                        {activity.activityType ||
+                          activity.acitvityType ||
+                          "N/A"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
+                        {activity.credentialId}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                            activity.status
+                          )}`}
+                        >
+                          {getStatusIcon(activity.status)}
+                          {activity.status}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${issuerStatus.color}`}
+                        >
+                          {issuerStatus.icon}
+                          {issuerStatus.text}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
+                        {new Date(activity.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex gap-2">
+                          {activity.attachmentLink && (
+                            <motion.a
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              href={activity.attachmentLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
+                              title="View Attachment"
+                            >
+                              <FiEye className="h-4 w-4" />
+                            </motion.a>
+                          )}
+                          {activity.status === "Pending" && (
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => openValidationModal(activity)}
+                              className="p-2 text-green-600 hover:bg-green-100 rounded-lg"
+                              title="Validate Activity"
+                            >
+                              <FiCheck className="h-4 w-4" />
+                            </motion.button>
+                          )}
+                          {activity.status !== "Pending" && (
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => openValidationModal(activity)}
+                              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                              title="Edit Validation"
+                            >
+                              <FiEdit className="h-4 w-4" />
+                            </motion.button>
+                          )}
+                        </div>
+                      </td>
+                      {activeTab !== "Pending" && (
+                        <td className="px-6 py-4 whitespace-normal text-sm text-[#4B5563]">
+                          {activity.remarks || "—"}
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -441,6 +464,14 @@ const Approval = () => {
                   <strong>Credential ID:</strong>{" "}
                   {selectedActivity.credentialId}
                 </p>
+                {selectedActivity.activityType === "Extra-Curricular" && (
+                  <p className="text-sm text-[#4B5563]">
+                    <strong>Issuer Verification:</strong>{" "}
+                    {selectedActivity.isIssuerVerified
+                      ? "Verified"
+                      : "Pending Verification"}
+                  </p>
+                )}
               </div>
 
               <form onSubmit={handleValidate} className="space-y-4">
