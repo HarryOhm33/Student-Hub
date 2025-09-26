@@ -79,7 +79,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"identifier\": \"hari333333om@gmail.com\",\r\n    \"password\": \"1234\",\r\n    \"role\": \"admin\"\r\n    // \"identifier\": \"EMPDCE1017290\",\r\n    // \"password\": \"1234\",\r\n    // \"role\": \"faculty\"\r\n    // \"identifier\": \"23874111999\",\r\n    // \"password\": \"1234\",\r\n    // \"role\": \"student\"\r\n}",
+							"raw": "{\r\n    // \"identifier\": \"hari333333om@gmail.com\",\r\n    // \"password\": \"1234\",\r\n    // \"role\": \"admin\"\r\n    // \"identifier\": \"EMPDCE1017290\",\r\n    // \"password\": \"1234\",\r\n    // \"role\": \"faculty\"\r\n    \"identifier\": \"23874111999\",\r\n    \"password\": \"1234\",\r\n    \"role\": \"student\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -151,6 +151,32 @@
 		{
 			"name": "Admin",
 			"item": [
+				{
+					"name": "get dashboard data",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Bob\",\r\n    \"email\": \"harrygdsc@gmail.com\",\r\n    \"password\": \"1234\",\r\n    \"departmentName\": \"CSE\",\r\n    \"regNumber\": \"23874111999\",\r\n    \"courseName\": \"B-Tech\",\r\n    \"year\": \"2023-2027\"\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/dashboard",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "institute-details",
 					"protocolProfileBehavior": {
@@ -271,7 +297,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Adam\",\r\n    \"email\": \"ans444444hu@gmail.com\",\r\n    \"password\": \"1234\",\r\n    \"departmentName\" \"D\",\r\n    \"designation\":\r\n}"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/admin/faculty-list",
@@ -333,8 +359,660 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Upload Reports",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "NAAC Report 2025",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Annual NAAC submission",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "NAAC",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/hari3/Downloads/os lab.pdf"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/reports/upload",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"reports",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get reports",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/reports/my",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"reports",
+								"my"
+							]
+						}
+					},
+					"response": []
 				}
 			]
+		},
+		{
+			"name": "Faculty",
+			"item": [
+				{
+					"name": "Dashboard Data",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"NAAC Report 2025\",\r\n      \"description\": \"Annual NAAC submission\",\r\n      \"type\": \"NAAC\"\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/faculty/dashboard",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"faculty",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get student list",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identifier\": \"hari333333om@gmail.com\",\r\n    \"password\": \"1234\",\r\n    \"role\": \"admin\"\r\n    // \"identifier\": \"EMPDCE1017290\",\r\n    // \"password\": \"1234\",\r\n    // \"role\": \"faculty\"\r\n    // \"identifier\": \"23874111999\",\r\n    // \"password\": \"1234\",\r\n    // \"role\": \"student\"\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/faculty/students",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"faculty",
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "student by id",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"studentId\": \"68c2e32b5952a31ea3037409\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/faculty/student",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"faculty",
+								"student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add grade",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"studentId\": \"68c2e32b5952a31ea3037409\",\r\n  \"cgpa\": 8.5\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/faculty/student/grade",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"faculty",
+								"student",
+								"grade"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add attendance",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"studentId\": \"68c2e32b5952a31ea3037409\",\r\n  \"totalHeld\": 30,\r\n  \"totalAttended\": 25\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/faculty/student/attendance",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"faculty",
+								"student",
+								"attendance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all activity",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/faculty/activities",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"faculty",
+								"activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Activity",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"activityId\": \"68c940e4a43cfc768c2fc9a6\",\r\n  \"status\": \"Rejected\",\r\n  \"remarks\": \"This Is Not Enough\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/faculty/validate-activity",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"faculty",
+								"validate-activity"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Student",
+			"item": [
+				{
+					"name": "get dashboard data",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/student/dashboard",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"student",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get academics",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"studentId\": \"68c2e32b5952a31ea3037409\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/student/academics",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"student",
+								"academics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-faculty-list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/student/faculty-list",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"student",
+								"faculty-list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Apply Activity",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Hackathon 2",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "National Hackathon 2",
+									"type": "text"
+								},
+								{
+									"key": "activityType",
+									"value": "Extra-Curricular",
+									"type": "text"
+								},
+								{
+									"key": "credentialId",
+									"value": "ACT2025006",
+									"type": "text"
+								},
+								{
+									"key": "appliedTo",
+									"value": "68ce3626df4d943eb120f7d4",
+									"type": "text"
+								},
+								{
+									"key": "issuerEmail",
+									"value": "hari333333om@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "attachment",
+									"type": "file",
+									"src": "/C:/Users/hari3/Downloads/blockchain model.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/student/apply-activity",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"student",
+								"apply-activity"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get my activity",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Hackathon",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "National Hackathon",
+									"type": "text"
+								},
+								{
+									"key": "credentialId",
+									"value": "ACT2025001",
+									"type": "text"
+								},
+								{
+									"key": "appliedTo",
+									"value": "68c2e3245952a31ea30373ff",
+									"type": "text"
+								},
+								{
+									"key": "attachment",
+									"type": "file",
+									"src": "/C:/Users/hari3/OneDrive/Pictures/20230919.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/student/my-activities",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"student",
+								"my-activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "generate portfolio",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"My Portfolio - Sept 2025\",\r\n  \"description\": \"Generated portfolio including academics and activities\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/student/portfolio/generate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"student",
+								"portfolio",
+								"generate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload portfolio",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "test description",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/hari3/Downloads/os lab.pdf"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/student/portfolio/upload",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"student",
+								"portfolio",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get portfolio",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "test description",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/hari3/Downloads/os lab.pdf"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/student/portfolio/my",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"student",
+								"portfolio",
+								"my"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "aadhar search",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"aadhar\": \"204993665665\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/open/institute-stats",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"open",
+						"institute-stats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Home data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/open/home-data",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"open",
+						"home-data"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Issuer approval session",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"token\": \"11cb51a1262c26370fdfece3d9a2c89057860470e28f688b857ed32bbe90b3ad\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/open/issuer/get-session-info",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"open",
+						"issuer",
+						"get-session-info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "IssuerApproval",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"token\": \"7e6d2e9c2353f766ef54eab838727a74c27af54d01c46cf29978582c666fd88d\",\r\n \"credentialId\": \"ACT2025006\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/open/issuer/approve",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"open",
+						"issuer",
+						"approve"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"variable": [
