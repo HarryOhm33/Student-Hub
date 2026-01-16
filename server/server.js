@@ -19,6 +19,7 @@ const facultyRoute = require("./routes/facultyRoute");
 const studentRoute = require("./routes/studentRoute");
 const openRoute = require("./routes/openRoute");
 
+app.set("trust proxy", 1);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser()); // ✅ Middleware for handling cookies
