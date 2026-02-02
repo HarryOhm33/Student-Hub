@@ -36,9 +36,6 @@ corsOptions = {
 };
 app.use(cors(corsOptions)); // ✅ CORS Middleware
 
-app.set("trust proxy", 1);
-app.options("*", cors());
-
 app.use("/api/auth", authRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/faculty", facultyRoute);
