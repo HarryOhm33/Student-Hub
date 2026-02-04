@@ -138,7 +138,7 @@ const Navbar = () => {
               />
               {/* Brand Name */}
               <span className="ml-2 bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent sm:block">
-                Pratibha-Kosh
+                Student-Hub
               </span>
             </Link>
           </div>
