@@ -1,0 +1,55 @@
+name: Student-Hub CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # get repo
+      - uses: actions/checkout@v4
+
+      # ======================
+      # BACKEND CI (TESTING)
+      # ======================
+
+      - name: Install backend deps
+        run: cd server && npm install
+
+      - name: Run backend tests
+        run: cd server && npm test
+
+      # ======================
+      # FRONTEND CI (BUILD)
+      # ======================
+
+      - name: Install frontend deps
+        run: cd client && npm install
+
+      - name: Build frontend
+        run: cd client && npm run build
+
+      # ======================
+      # DEPLOY TO EC2
+      # ======================
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd /home/ubuntu/Student-Hub/server
+            git pull
+            npm install
+            pm2 reload backend
+
+            sudo rm -rf /var/www/student-hub/*
+            cp -r /home/ubuntu/Student-Hub/client/dist/* /var/www/student-hub/
+
+            sudo systemctl reload nginx
