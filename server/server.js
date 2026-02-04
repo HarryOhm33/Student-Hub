@@ -1,58 +1,14 @@
-if (process.env.NODE_ENV != "production") {
-  require("dotenv").config();
-}
+require("dotenv").config();
+
+const app = require("./app");
 const connectDB = require("./config/db");
-connectDB();
-// require("./utils/cronJobs");
 
-const express = require("express");
-const app = express();
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
+const port = process.env.PORT || 8001;
 
-const port = process.env.PORT;
+(async () => {
+  await connectDB(); // ✅ connect only here
 
-const ExpressError = require("./utils/ExpressError");
-const authRoute = require("./routes/authRoute");
-const adminRoute = require("./routes/adminRoute");
-const facultyRoute = require("./routes/facultyRoute");
-const studentRoute = require("./routes/studentRoute");
-const openRoute = require("./routes/openRoute");
-
-app.set("trust proxy", 1);
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cookieParser()); // ✅ Middleware for handling cookies
-
-corsOptions = {
-  origin: [
-    process.env.FRONTEND_URL,
-    "http://localhost:5173",
-    "http://localhost:5174",
-  ],
-  credentials: true, // Allow cookies to be sent
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-app.use(cors(corsOptions)); // ✅ CORS Middleware
-
-app.use("/api/auth", authRoute);
-app.use("/api/admin", adminRoute);
-app.use("/api/faculty", facultyRoute);
-app.use("/api/student", studentRoute);
-app.use("/api/open", openRoute);
-
-app.all("*", (req, res, next) => {
-  next(new ExpressError(404, "Not a Valid Route"));
-});
-
-//Error Handling Middleware
-
-app.use((err, req, res, next) => {
-  let { status = 500, message = "Something Went Wrong!!" } = err;
-  res.status(status).json({ error: message });
-});
-
-app.listen(port, () => {
-  console.log(`App Listening To Port ${port}`);
-});
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+})();
