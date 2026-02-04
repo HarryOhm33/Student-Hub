@@ -50,6 +50,6 @@ jobs:
             pm2 reload backend
 
             sudo rm -rf /var/www/student-hub/*
-            cp -r /home/ubuntu/Student-Hub/client/dist/* /var/www/student-hub/
+            sudo cp -r /home/ubuntu/Student-Hub/client/dist/* /var/www/student-hub/
 
             sudo systemctl reload nginx
