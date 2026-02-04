@@ -44,12 +44,21 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd /home/ubuntu/Student-Hub/server
+            cd /home/ubuntu/Student-Hub
+
             git pull
+
+            # backend
+            cd server
             npm install
             pm2 reload backend
 
+            # frontend
+            cd ../client
+            npm install
+            npm run build
+
             sudo rm -rf /var/www/student-hub/*
-            sudo cp -r /home/ubuntu/Student-Hub/client/dist/* /var/www/student-hub/
+            sudo cp -r dist/* /var/www/student-hub/
 
             sudo systemctl reload nginx
