@@ -17,6 +17,7 @@ import {
   FiX,
   FiChevronLeft,
   FiUserMinus,
+  FiCpu,
 } from "react-icons/fi";
 
 const Sidebar = () => {
@@ -128,6 +129,12 @@ const Sidebar = () => {
           label: "Portfolio",
           icon: FiCalendar,
           path: "/student/portfolio",
+        },
+        {
+          id: "ai-insights",
+          label: "AI Insights",
+          icon: FiCpu,
+          path: "/student/ai-insights",
         },
       ];
     }

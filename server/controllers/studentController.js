@@ -29,44 +29,7 @@ module.exports.getDashboardData = async (req, res) => {
   // --- Activities ---
   const activities = await Activity.find({ student: studentId });
 
-  // Gemini Data
-  const activitiesGemini = await Activity.find({
-    student: studentId,
-    status: "Approved",
-  });
-
-  const studentDataGemini = {
-    attendance,
-    grade,
-    activitiesGemini,
-  };
-
-  // custom prompt
-  const prompt = `
-  You are a career mentor speaking directly to a student. 
-  Your tone should be clear, encouraging, and straight to the point. 
-  Never say "the student" or talk in third person — always use "you".  
-
-  Use this structure in your response:
-
-  **Career Paths:**  
-  Briefly suggest possible career directions based on academics, attendance, and activities.  
-
-  **Strengths:**  
-  Point out what the student is doing well.  
-
-  **Areas to Improve:**  
-  Give direct advice on weak areas (be constructive, not harsh).  
-
-  **Recommendations:**  
-  Actionable next steps the student should take (skills, habits, opportunities).  
-
-  Keep the response concise (6–8 sentences max). 
-  Avoid long paragraphs — use short, impactful sentences.`;
-
-  const insights = await askGemini(prompt, studentDataGemini);
-
-  // Attendance Stats
+  // Attendance %
   let attendancePercent = 0;
   if (attendance?.totalHeld > 0) {
     attendancePercent = (
@@ -75,19 +38,18 @@ module.exports.getDashboardData = async (req, res) => {
     ).toFixed(2);
   }
 
-  // Activities Stats
+  // Activity stats
   const totalActivities = activities.length;
   const approvedActivities = activities.filter(
-    (a) => a.status === "Approved"
+    (a) => a.status === "Approved",
   ).length;
   const pendingActivities = activities.filter(
-    (a) => a.status === "Pending"
+    (a) => a.status === "Pending",
   ).length;
   const rejectedActivities = activities.filter(
-    (a) => a.status === "Rejected"
+    (a) => a.status === "Rejected",
   ).length;
 
-  // Build Dashboard Response
   const dashboardData = {
     student: {
       name: student.name,
@@ -112,14 +74,13 @@ module.exports.getDashboardData = async (req, res) => {
         curricular: activities.filter((a) => a.activityType === "Curricular")
           .length,
         coCurricular: activities.filter(
-          (a) => a.activityType === "Co-Curricular"
+          (a) => a.activityType === "Co-Curricular",
         ).length,
         extraCurricular: activities.filter(
-          (a) => a.activityType === "Extra-Curricular"
+          (a) => a.activityType === "Extra-Curricular",
         ).length,
       },
     },
-    // Example chart data structure (you can map directly in frontend)
     charts: {
       attendanceTrend: [
         { label: "Attended", value: attendance?.totalAttended || 0 },
@@ -152,12 +113,10 @@ module.exports.getDashboardData = async (req, res) => {
         },
       ],
     },
-    ai_insights: insights,
   };
 
   res.status(200).json({
     valid: true,
-    message: "Dashboard data fetched successfully",
     dashboard: dashboardData,
   });
 };
@@ -176,7 +135,7 @@ module.exports.getMyAcademics = async (req, res) => {
     student: studentId,
     status: "Approved",
   }).select(
-    "title description credentialId activityType attachmentLink remarks isIssuerVerificationRequired isIssuerVerified createdAt"
+    "title description credentialId activityType attachmentLink remarks isIssuerVerificationRequired isIssuerVerified createdAt",
   );
 
   res.status(200).json({
@@ -192,7 +151,7 @@ module.exports.getMyAcademics = async (req, res) => {
 module.exports.getFacultyList = async (req, res) => {
   const faculties = await Faculty.find(
     { institute: req.user.institute },
-    { name: 1 } // only return name + _id
+    { name: 1 }, // only return name + _id
   );
 
   if (!faculties || faculties.length === 0) {
@@ -241,7 +200,7 @@ module.exports.applyActivity = async (req, res) => {
         (error, result) => {
           if (error) reject(error);
           else resolve(result);
-        }
+        },
       );
       stream.end(req.file.buffer);
     });
@@ -280,7 +239,7 @@ module.exports.applyActivity = async (req, res) => {
     const htmlContent = generateIssuerApprovalEmail(
       req.user.name,
       title,
-      approvalUrl
+      approvalUrl,
     );
 
     await sendEmail(
@@ -289,7 +248,7 @@ module.exports.applyActivity = async (req, res) => {
       {
         text: `Please review at The Following Activity`,
         html: htmlContent,
-      }
+      },
     );
   }
 
@@ -344,7 +303,7 @@ module.exports.uploadPortfolioFile = async (req, res) => {
       (error, result) => {
         if (error) reject(error);
         else resolve(result);
-      }
+      },
     );
     uploadStream.end(req.file.buffer);
   });
@@ -410,3 +369,90 @@ module.exports.getMyPortfolios = async (req, res) => {
 //     portfolio,
 //   });
 // };
+
+// ================== GET AI Insights ===================
+
+module.exports.getAIInsights = async (req, res) => {
+  const studentId = req.user._id;
+
+  // Fetch data
+  const attendance = await Attendance.findOne({ student: studentId });
+  const grade = await Grade.findOne({ student: studentId });
+
+  const activities = await Activity.find({
+    student: studentId,
+    status: "Approved",
+  });
+
+  const studentDataGemini = {
+    attendance,
+    grade,
+    activities,
+  };
+
+  // 🔥 Structured JSON prompt (VERY IMPORTANT)
+  const prompt = `
+You are an AI career mentor.
+
+Analyze the student data and return ONLY JSON.
+Do not write explanation.
+Do not write markdown.
+Return valid JSON only.
+
+Schema:
+
+{
+  "career_paths": string[],
+  "strength_tags": string[],
+  "risk_flags": string[],
+  "recommended_activity_categories": string[],
+  "suggested_roles": string[],
+  "top_skills_detected": string[],
+  "improvement_tags": string[],
+  "suggested_actions": string[],
+  "risk_score": number
+}
+
+Rules:
+- risk_score = 0 to 100 (attendance + academics risk)
+- risk_flags should be short phrases
+- strength_tags based on activities
+- suggested_roles based on skills + CGPA + activities
+`;
+
+  try {
+    const raw = await askGemini(prompt, studentDataGemini);
+
+    // ✅ Safe parse
+    let parsed;
+
+    try {
+      parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    } catch (err) {
+      // fallback if Gemini returns text
+      parsed = {
+        career_paths: [],
+        strength_tags: [],
+        risk_flags: ["ai_parse_failed"],
+        recommended_activity_categories: [],
+        suggested_roles: [],
+        top_skills_detected: [],
+        improvement_tags: [],
+        suggested_actions: [],
+        risk_score: null,
+        raw_text: raw,
+      };
+    }
+
+    res.status(200).json({
+      valid: true,
+      message: "AI insights generated successfully",
+      ai_insights: parsed,
+    });
+  } catch (err) {
+    res.status(500).json({
+      valid: false,
+      message: "AI insights generation failed",
+    });
+  }
+};

@@ -8,18 +8,16 @@ import {
   FiMail,
   FiBook,
   FiAward,
-  FiCalendar,
   FiActivity,
   FiCheckCircle,
   FiClock,
   FiXCircle,
   FiDownload,
   FiUpload,
-  FiFileText,
-  FiPieChart,
-  FiBarChart2,
   FiHash,
-  FiStar,
+  FiBarChart2,
+  FiPieChart,
+  FiCpu,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -35,6 +33,7 @@ import {
   Legend,
 } from "chart.js";
 import PortfolioPDF from "./PortfolioPDF";
+import { useNavigate } from "react-router-dom";
 
 // Register ChartJS components
 ChartJS.register(
@@ -44,11 +43,12 @@ ChartJS.register(
   ArcElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const StudentDashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generatingPdf, setGeneratingPdf] = useState(false);
@@ -84,12 +84,12 @@ const StudentDashboard = () => {
       formData.append("title", `${dashboardData.student.name}'s Portfolio`);
       formData.append(
         "description",
-        `Automatically generated portfolio for ${dashboardData.student.name}`
+        `Automatically generated portfolio for ${dashboardData.student.name}`,
       );
       formData.append(
         "file",
         pdfBlob,
-        `${dashboardData.student.regNumber}_portfolio.pdf`
+        `${dashboardData.student.regNumber}_portfolio.pdf`,
       );
 
       // Upload the generated PDF
@@ -116,33 +116,6 @@ const StudentDashboard = () => {
     } finally {
       setGeneratingPdf(false);
     }
-  };
-
-  // Format AI insights text
-  const formatAIInsights = (text) => {
-    if (!text) return null;
-
-    return text.split("\n").map((line, index) => {
-      // Check for bold text pattern **text**
-      const boldRegex = /\*\*(.*?)\*\*/g;
-      const parts = line.split(boldRegex);
-
-      return (
-        <p key={index} className="mb-2">
-          {parts.map((part, i) => {
-            // Every odd index is the text inside **
-            if (i % 2 === 1) {
-              return (
-                <strong key={i} className="font-semibold text-[#1F2937]">
-                  {part}
-                </strong>
-              );
-            }
-            return part;
-          })}
-        </p>
-      );
-    });
   };
 
   // Chart data configurations
@@ -221,20 +194,31 @@ const StudentDashboard = () => {
             Welcome back, {dashboardData.student.name}!
           </p>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={generateAndUploadPortfolio}
-          disabled={generatingPdf}
-          className="flex items-center gap-2 px-4 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded-lg font-semibold shadow-md disabled:opacity-50"
-        >
-          {generatingPdf ? (
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          ) : (
-            <FiDownload className="h-4 w-4" />
-          )}
-          {generatingPdf ? "Generating PDF..." : "Generate Portfolio PDF"}
-        </motion.button>
+        <div className="flex gap-3">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate("/student/ai-insights")}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shadow-md"
+          >
+            <FiCpu className="h-4 w-4" />
+            AI Insights
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={generateAndUploadPortfolio}
+            disabled={generatingPdf}
+            className="flex items-center gap-2 px-4 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded-lg font-semibold shadow-md disabled:opacity-50"
+          >
+            {generatingPdf ? (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+              <FiDownload className="h-4 w-4" />
+            )}
+            {generatingPdf ? "Generating PDF..." : "Generate Portfolio PDF"}
+          </motion.button>
+        </div>
       </div>
 
       {/* Student Info Cards */}
@@ -442,6 +426,16 @@ const StudentDashboard = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              className="w-full flex items-center gap-3 px-4 py-3 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg font-medium"
+              onClick={() => navigate("/student/ai-insights")}
+            >
+              <FiCpu className="h-5 w-5" />
+              View AI Insights
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className="w-full flex items-center gap-3 px-4 py-3 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg font-medium"
               onClick={generateAndUploadPortfolio}
               disabled={generatingPdf}
@@ -489,27 +483,6 @@ const StudentDashboard = () => {
           </div>
           <div className="h-64">
             <Pie data={activityTypesData} options={chartOptions} />
-          </div>
-        </div>
-      </div>
-
-      {/* AI Insights Section */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <div className="flex items-center mb-4">
-          <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 mr-3">
-            <FiStar className="h-5 w-5" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-[#1F2937]">AI Insights</h2>
-            <p className="text-[#4B5563]">
-              Personalized recommendations based on your performance
-            </p>
-          </div>
-        </div>
-
-        <div className="bg-indigo-50 rounded-lg p-4">
-          <div className="text-[#4B5563]">
-            {formatAIInsights(dashboardData.ai_insights)}
           </div>
         </div>
       </div>

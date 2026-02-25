@@ -28,6 +28,7 @@ import Reports from "./Pages/Admin/Reports";
 import StudentSearch from "./Pages/StudentSearch";
 import NotFound from "./Pages/NotFound"; // Import the new component
 import IssuerApproval from "./Pages/IssuerApproval";
+import AI_Insights from "./Pages/Student/AI_Insights";
 
 function App() {
   return (
@@ -73,6 +74,7 @@ function App() {
               <Route path="/student/academics" element={<Academics />} />
               <Route path="/student/approval" element={<ApplyApproval />} />
               <Route path="/student/portfolio" element={<Portfolio />} />
+              <Route path="/student/ai-insights" element={<AI_Insights />} />
             </Route>
 
             {/* Common protected routes for all roles */}

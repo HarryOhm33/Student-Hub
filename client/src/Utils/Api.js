@@ -64,6 +64,9 @@ export const uploadReport = (data) =>
 
 export const getMyReports = () => axiosInstance.get("/api/admin/reports/my");
 
+export const getAIInsights = () =>
+  axiosInstance.get("/api/student/get-ai-insights");
+
 // ===================== Faculty APIs ===================
 
 export const getFacultyDashboard = () =>

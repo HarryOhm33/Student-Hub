@@ -14,13 +14,14 @@ const {
   getMyPortfolios,
   uploadPortfolioFile,
   getPortfolioById,
+  getAIInsights,
 } = require("../controllers/studentController");
 
 router.get(
   "/dashboard",
   authenticate,
   checkStudent,
-  wrapAsync(getDashboardData)
+  wrapAsync(getDashboardData),
 );
 
 // Single route to fetch student's attendance & grade
@@ -30,7 +31,7 @@ router.get(
   "/faculty-list",
   authenticate,
   checkStudent, // usually only Admin can view all faculty
-  wrapAsync(getFacultyList)
+  wrapAsync(getFacultyList),
 );
 
 router.post(
@@ -38,14 +39,14 @@ router.post(
   authenticate,
   checkStudent,
   upload.single("attachment"), // form field name = "attachment"
-  wrapAsync(applyActivity)
+  wrapAsync(applyActivity),
 );
 
 router.get(
   "/my-activities",
   authenticate,
   checkStudent, // only students
-  wrapAsync(getMyActivities)
+  wrapAsync(getMyActivities),
 );
 
 // Upload student's portfolio
@@ -54,7 +55,7 @@ router.post(
   authenticate,
   checkStudent,
   upload.single("file"),
-  wrapAsync(uploadPortfolioFile)
+  wrapAsync(uploadPortfolioFile),
 );
 
 // Student list their own portfolios
@@ -62,10 +63,17 @@ router.get(
   "/portfolio/my",
   authenticate,
   checkStudent,
-  wrapAsync(getMyPortfolios)
+  wrapAsync(getMyPortfolios),
 );
 
 // Get portfolio by id (student/faculty/admin can view if same institute or owner)
 // router.get("/portfolio/:id", authenticate, wrapAsync(getPortfolioById));
+
+router.get(
+  "/get-ai-insights",
+  authenticate,
+  checkStudent,
+  wrapAsync(getAIInsights),
+);
 
 module.exports = router;
