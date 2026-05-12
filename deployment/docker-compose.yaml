@@ -1,0 +1,28 @@
+services:
+  server:
+    image: studenthub-server:latest
+    build:
+      context: ../server
+      dockerfile: ../server/deploy/Dockerfile
+    container_name: studenthub_server
+    restart: always
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+
+  client:
+    image: studenthub-client:latest
+    build:
+      context: ../client
+      dockerfile: ../client/deploy/Dockerfile
+      args:
+        VITE_BACKEND_URL: ${VITE_BACKEND_URL}
+    container_name: studenthub_client
+    restart: always
+    ports:
+      - "5173:5173"
+    env_file:
+      - .env
+    depends_on:
+      - server
