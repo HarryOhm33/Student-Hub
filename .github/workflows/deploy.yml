@@ -1,3 +1,68 @@
+# name: Student-Hub CI/CD
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   build-test-deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       # get repo
+#       - uses: actions/checkout@v4
+
+#       # ======================
+#       # BACKEND CI (TESTING)
+#       # ======================
+
+#       - name: Install backend deps
+#         run: cd server && npm install
+
+#       - name: Run backend tests
+#         run: cd server && npm test
+
+#       # ======================
+#       # FRONTEND CI (BUILD)
+#       # ======================
+
+#       - name: Install frontend deps
+#         run: cd client && npm install
+
+#       - name: Build frontend
+#         run: cd client && npm run build
+
+#       # ======================
+#       # DEPLOY TO EC2
+#       # ======================
+
+#       - name: Deploy to server
+#         uses: appleboy/ssh-action@v1.0.0
+#         with:
+#           host: ${{ secrets.EC2_HOST }}
+#           username: ${{ secrets.EC2_USER }}
+#           key: ${{ secrets.EC2_KEY }}
+#           script: |
+#             cd /home/ubuntu/Student-Hub
+
+#             git pull
+
+#             # backend
+#             cd server
+#             npm install
+#             pm2 reload backend
+
+#             # frontend
+#             cd ../client
+#             npm install
+#             npm run build
+
+#             sudo rm -rf /var/www/student-hub/*
+#             sudo cp -r dist/* /var/www/student-hub/
+
+#             sudo systemctl reload nginx
+
 name: Student-Hub CI/CD
 
 on:
@@ -6,59 +71,91 @@ on:
       - main
 
 jobs:
-  build-test-deploy:
+  build-push-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # get repo
-      - uses: actions/checkout@v4
+      # Checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       # ======================
-      # BACKEND CI (TESTING)
+      # BACKEND TESTING
       # ======================
 
       - name: Install backend deps
-        run: cd server && npm install
+        run: |
+          cd server
+          npm install
 
       - name: Run backend tests
-        run: cd server && npm test
+        run: |
+          cd server
+          npm test
 
       # ======================
-      # FRONTEND CI (BUILD)
+      # FRONTEND BUILD TEST
       # ======================
 
       - name: Install frontend deps
-        run: cd client && npm install
+        run: |
+          cd client
+          npm install
 
       - name: Build frontend
-        run: cd client && npm run build
+        run: |
+          cd client
+          npm run build
+
+      # ======================
+      # DOCKER LOGIN
+      # ======================
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # ======================
+      # BUILD + PUSH SERVER
+      # ======================
+
+      - name: Build and push backend image
+        run: |
+          docker build -t harryohm33/studenthub-server:latest -f server/deploy/Dockerfile ./server
+          docker push harryohm33/studenthub-server:latest
+
+      # ======================
+      # BUILD + PUSH CLIENT
+      # ======================
+
+      - name: Build and push frontend image
+        run: |
+          docker build \
+          --build-arg VITE_BACKEND_URL=${{ secrets.VITE_BACKEND_URL }} \
+          -t harryohm33/studenthub-client:latest \
+          -f client/deploy/Dockerfile \
+          ./client
+
+          docker push harryohm33/studenthub-client:latest
 
       # ======================
       # DEPLOY TO EC2
       # ======================
 
-      - name: Deploy to server
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
+
           script: |
-            cd /home/ubuntu/Student-Hub
+            cd /home/ubuntu/Student-Hub-prod
 
-            git pull
+            docker-compose pull
 
-            # backend
-            cd server
-            npm install
-            pm2 reload backend
+            docker-compose up -d
 
-            # frontend
-            cd ../client
-            npm install
-            npm run build
-
-            sudo rm -rf /var/www/student-hub/*
-            sudo cp -r dist/* /var/www/student-hub/
-
-            sudo systemctl reload nginx
+            docker image prune -af

@@ -1,6 +1,6 @@
 services:
   server:
-    image: studenthub-server:latest
+    image: harryohm33/studenthub-server:latest
     build:
       context: ../server
       dockerfile: ../server/deploy/Dockerfile
@@ -12,7 +12,7 @@ services:
       - .env
 
   client:
-    image: studenthub-client:latest
+    image: harryohm33/studenthub-client:latest
     build:
       context: ../client
       dockerfile: ../client/deploy/Dockerfile
