@@ -152,7 +152,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
 
           script: |
-            cd /home/ubuntu/Student-Hub-prod
+            cd /home/ubuntu/Student-Hub-Prod
 
             docker-compose pull
 
