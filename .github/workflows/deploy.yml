@@ -143,6 +143,7 @@ jobs:
       # ======================
       # DEPLOY TO EC2
       # ======================
+      # ======================
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.0
